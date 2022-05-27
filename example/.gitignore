@@ -1,5 +1,7 @@
 .idea/
 node_modules/
+www/
+.parcel-cache
 .vscode/
 *.map
 .DS_Store

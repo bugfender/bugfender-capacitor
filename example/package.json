@@ -8,16 +8,30 @@
     "mobile"
   ],
   "scripts": {
+    "build": "parcel build --target frontend --no-cache",
+    "serve": "parcel --target frontend --no-cache",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "targets": {
+    "frontend": {
+      "source": "src/index.html",
+      "distDir": "www"
+    }
+  },
+  "alias": {
+    "buffer": false
+  },
   "dependencies": {
-    "@capacitor/core": "latest",
+    "@bugfender/capacitor": "file:..",
     "@capacitor/camera": "latest",
-    "@capacitor/splash-screen": "latest",
-    "@bugfender/capacitor": "file:.."
+    "@capacitor/core": "latest",
+    "@capacitor/splash-screen": "latest"
   },
   "devDependencies": {
-    "@capacitor/cli": "latest"
+    "@capacitor/cli": "latest",
+    "buffer": "^6.0.3",
+    "parcel": "^2.5.0",
+    "serve": "^13.0.2"
   },
   "author": "",
   "license": "ISC"
