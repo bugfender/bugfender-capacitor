@@ -18,5 +18,14 @@ export default {
       inlineDynamicImports: true,
     },
   ],
-  external: ['@capacitor/core'],
+  external: [
+    '@capacitor/core',
+    '@bugfender/sdk',
+    '@bugfender/types',
+  ],
+  output: {
+    globals: {
+      '@bugfender/sdk': 'Bugfender',
+    },
+  },
 };

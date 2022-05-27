@@ -75,5 +75,9 @@
     "android": {
       "src": "android"
     }
+  },
+  "dependencies": {
+    "@bugfender/sdk": "^2.1.0",
+    "@bugfender/types": "^1.0.0-alpha.0"
   }
 }
