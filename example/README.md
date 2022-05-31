@@ -1,12 +1,18 @@
-## Created with Capacitor Create App
+# `@bugfender/capacitor` example
 
-This app was created using [`@capacitor/create-app`](https://github.com/ionic-team/create-capacitor-app),
-and comes with a very minimal shell for building an app.
+## Initial Setup
 
-### Running this example
+- Ensure that [NVM](https://github.com/nvm-sh/nvm) is installed
+- `nvm install`: Install the required Node.js version
+- `nvm use`: Ensure correct Node.js version is in use
+- `npm ci`: Install the dependencies
+- `cp config.json.example config.json`: Create the config file
+- Fill `config.json`
 
-To run the provided example, you can use [serve](https://www.npmjs.com/package/serve):
+## Running this example
 
-```bash
-npx serve
-```
+- `nvm use`: Ensure correct Node.js version is in use
+- In the repository root:
+  - `npm build`: build `@bugfender/capacitor`
+- In the `example` folder:
+  - `npm run serve`: run the example server

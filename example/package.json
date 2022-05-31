@@ -8,8 +8,8 @@
     "mobile"
   ],
   "scripts": {
-    "build": "parcel build --target frontend --no-cache",
-    "serve": "parcel --target frontend --no-cache",
+    "build": "rm -rf .parcel-cache && parcel build --target frontend --no-cache",
+    "serve": "rm -rf .parcel-cache && parcel --target frontend --no-cache",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "targets": {

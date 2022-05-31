@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { Bugfender } from '@bugfender/capacitor';
+import config from '../config.json';
 
 console.log('aupa');
 console.log(Capacitor.getPlatform());
@@ -9,7 +10,7 @@ Bugfender.getUserFeedback();
 Bugfender.log('Hello from Capacitor!');
 
 const bfPromise = Bugfender.init({
-  appKey: '',
+  appKey: config.appKey,
   overrideConsoleMethods: true,
   printToConsole: true,
 });

@@ -6,3 +6,4 @@ www/
 *.map
 .DS_Store
 .sourcemaps
+config.json
