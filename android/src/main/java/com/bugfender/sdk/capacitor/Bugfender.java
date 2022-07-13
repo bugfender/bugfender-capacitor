@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class Bugfender {
 
-    public String echo(String value) {
+    public String log(String value) {
         Log.i("Echo", value);
         return value;
     }

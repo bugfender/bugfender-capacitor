@@ -4,21 +4,23 @@ import config from '../config.json';
 
 console.log('aupa');
 console.log(Capacitor.getPlatform());
-console.log(Bugfender);
+// console.log(Bugfender);
 
-Bugfender.getUserFeedback();
+// Bugfender.getUserFeedback();
+// Bugfender.log({obj:'Hello from Capacitor!'});
 Bugfender.log('Hello from Capacitor!');
 
-const bfPromise = Bugfender.init({
-  appKey: config.appKey,
-  overrideConsoleMethods: true,
-  printToConsole: true,
-});
+
+// const bfPromise = Bugfender.init({
+//   appKey: config.appKey,
+//   overrideConsoleMethods: true,
+//   printToConsole: true,
+// });
 
 console.log('ok…');
 
-bfPromise.then(async () => {
-  console.log('Initialized');
-  const sessionURL = await Bugfender.getSessionURL();
-  document.write(`<a href="${sessionURL}">${sessionURL}</a>`);
-});
+// bfPromise.then(async () => {
+//   console.log('Initialized');
+//   const sessionURL = await Bugfender.getSessionURL();
+//   document.write(`<a href="${sessionURL}">${sessionURL}</a>`);
+// });

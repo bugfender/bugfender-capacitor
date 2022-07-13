@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@bugfender/capacitor": "file:..",
+    "@capacitor/android": "^3.6.0",
     "@capacitor/camera": "latest",
     "@capacitor/core": "latest",
     "@capacitor/splash-screen": "latest"

@@ -12,11 +12,11 @@ public class BugfenderPlugin extends Plugin {
     private Bugfender implementation = new Bugfender();
 
     @PluginMethod
-    public void echo(PluginCall call) {
-        String value = call.getString("value");
+    public void log(PluginCall call) {
+        String value = call.getString("obj");
 
         JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
+        ret.put("obj", implementation.log(value));
         call.resolve(ret);
     }
 }

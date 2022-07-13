@@ -1,7 +1,7 @@
 import type { SDKOptions, UserFeedbackOptions, UserFeedbackResult, LogEntry, DeviceKeyValue } from '@bugfender/types';
-import type { BugfenderPlugin } from './definitions';
 import { WebPlugin } from '@capacitor/core';
 import { Bugfender } from '@bugfender/sdk';
+import {BugfenderPlugin} from "./definitions";
 
 export class BugfenderWeb extends WebPlugin implements BugfenderPlugin {
   public init(options: SDKOptions): Promise<void> {
