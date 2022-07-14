@@ -2,7 +2,7 @@
 
 declare module '@capacitor/cli' {
   export interface PluginsConfig {
-    Bugfender?: {};
+    Bugfender?: undefined;
   }
 }
 
