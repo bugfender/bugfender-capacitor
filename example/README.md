@@ -12,7 +12,9 @@
 ## Running this example
 
 - `nvm use`: Ensure correct Node.js version is in use
-- In the repository root:
-  - `npm build`: build `@bugfender/capacitor`
-- In the `example` folder:
-  - `npm run serve`: run the example server
+- Each time you do some changes to the plugin (root):
+  - In the repository root:
+    - `npm build`: build `@bugfender/capacitor`
+  - In the `example` folder:
+    - Stop example server.
+    - `npm run serve`: run the example server
