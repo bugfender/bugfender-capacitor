@@ -7,7 +7,7 @@ import {
   SDKOptions,
   UserFeedbackOptions,
   UserFeedbackResult
-} from "@bugfender/types";
+} from "@bugfender/common";
 import {BugfenderPlugin} from "./definitions";
 
 export class BugfenderCapacitorWrapper implements BugfenderFacade {
