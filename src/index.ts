@@ -1,4 +1,4 @@
-import type { BugfenderFacade } from '@bugfender/types';
+import type { BugfenderFacade } from '@bugfender/common';
 import { Capacitor, registerPlugin } from '@capacitor/core';
 
 import { BugfenderCapacitorWrapper } from './bugfender-capacitor-wrapper';
