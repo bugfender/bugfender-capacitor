@@ -21,7 +21,7 @@ export default {
   external: [
     '@capacitor/core',
     '@bugfender/sdk',
-    '@bugfender/types',
+    '@bugfender/common',
   ],
   output: {
     globals: {

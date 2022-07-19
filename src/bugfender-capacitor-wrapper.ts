@@ -4,10 +4,10 @@ import type {
   LogEntry,
   SDKOptions,
   UserFeedbackOptions,
-  UserFeedbackResult} from "@bugfender/types";
+  UserFeedbackResult} from "@bugfender/common";
 import {
   format
-} from "@bugfender/types";
+} from "@bugfender/common";
 
 import type {BugfenderPlugin} from "./definitions";
 
