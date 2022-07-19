@@ -14,9 +14,9 @@ const bfPromise = Bugfender.init({
 console.log('aupa');
 console.log(Capacitor.getPlatform());
 
-Bugfender.getUserFeedback();
+// Bugfender.getUserFeedback();
 Bugfender.log('Hello from Capacitor!');
-console.log('ok…');
+// console.log('ok…');
 
 bfPromise.then(async () => {
   console.log('Initialized');
