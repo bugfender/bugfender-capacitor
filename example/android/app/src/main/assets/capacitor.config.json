@@ -1,0 +1,11 @@
+{
+	"appId": "com.bugfender.sdk.capacitor.example",
+	"appName": "Bugfender Capacitor Example",
+	"webDir": "www",
+	"plugins": {
+		"Bugfender": {},
+		"SplashScreen": {
+			"launchShowDuration": 0
+		}
+	}
+}

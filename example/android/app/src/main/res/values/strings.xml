@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Bugfender Capacitor Example</string>
+    <string name="title_activity_main">Bugfender Capacitor Example</string>
+    <string name="package_name">com.bugfender.sdk.capacitor.example</string>
+    <string name="custom_url_scheme">com.bugfender.sdk.capacitor.example</string>
+</resources>
