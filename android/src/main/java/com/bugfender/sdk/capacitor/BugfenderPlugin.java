@@ -3,6 +3,7 @@ package com.bugfender.sdk.capacitor;
 import android.app.Activity;
 import androidx.activity.result.ActivityResult;
 import com.bugfender.sdk.Bugfender;
+import com.bugfender.sdk.LogLevel;
 import com.bugfender.sdk.ui.FeedbackActivity;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -24,7 +25,7 @@ public class BugfenderPlugin extends Plugin {
       Bugfender.overrideDeviceName(deviceName);
     }
 
-    String apiURL = call.getString("apiURL"):
+    String apiURL = call.getString("apiURL");
     if (apiURL != null) {
       Bugfender.setApiUrl(apiURL);
     }
@@ -40,10 +41,11 @@ public class BugfenderPlugin extends Plugin {
     );
     Bugfender.init(getContext(), call.getString("appKey"), debug);
 
-    // TODO ADD MAX STORAGE to JS
+    // region after init
+    Integer maximumLocalStorageSize = call.getInt("maximumLocalStorageSize");
+    Bugfender.setMaximumLocalStorageSize(maximumLocalStorageSize);
 
-    // TODO ADD enableLogcatLogging to JS
-    Boolean enableLogcatLogging = call.getBoolean("enableLogcatLogging", false);
+    boolean enableLogcatLogging = call.getBoolean("enableLogcatLogging", false);
     if (enableLogcatLogging) {
       Bugfender.enableLogcatLogging();
     }
@@ -53,10 +55,11 @@ public class BugfenderPlugin extends Plugin {
       Bugfender.enableUIEventLogging(getActivity().getApplication());
     }
 
-    Boolean registerErrorHandler = call.getBoolean("registerErrorHandler", false);
+    boolean registerErrorHandler = call.getBoolean("registerErrorHandler", false);
     if (registerErrorHandler) {
       Bugfender.enableCrashReporting();
     }
+    // endregion before init
 
     call.resolve();
   }
@@ -73,7 +76,7 @@ public class BugfenderPlugin extends Plugin {
     if (url != null) {
       JSObject response = new JSObject();
       response.put("url", url.toString());
-      call.resolve();
+      call.resolve(response);
     } else {
       call.reject("Bugfender SDK is not initialized. You should call first to the method Bugfender.init()");
     }
@@ -85,7 +88,7 @@ public class BugfenderPlugin extends Plugin {
     if (url != null) {
       JSObject response = new JSObject();
       response.put("url", url.toString());
-      call.resolve();
+      call.resolve(response);
     } else {
       call.reject("Bugfender SDK is not initialized. You should call first to the method Bugfender.init()");
     }
@@ -112,7 +115,7 @@ public class BugfenderPlugin extends Plugin {
     if (result.getResultCode() == Activity.RESULT_OK) {
       JSObject response = new JSObject();
       response.put("url", result.getData().getStringExtra(FeedbackActivity.RESULT_FEEDBACK_URL));
-      call.resolve();
+      call.resolve(response);
     } else {
       call.reject("Feedback not sent");
     }
@@ -186,27 +189,33 @@ public class BugfenderPlugin extends Plugin {
 
   @PluginMethod
   public void sendLog(PluginCall call) {
-    // TODO
+    Bugfender.log(
+      call.getInt("line"),
+      call.getString("method"),
+      call.getString("file"),
+      parseLogLevel(call.getInt("level")),
+      call.getString("tag"),
+      call.getString("text")
+    );
   }
 
-  //private static LogLevel parseLogLevel(int loglevel) {
-  //  switch (loglevel) {
-  //    case 3:
-  //      return LogLevel.Trace;
-  //    case 4:
-  //      return LogLevel.Info;
-  //    case 5:
-  //      return LogLevel.Fatal;
-  //    case 0:
-  //      return LogLevel.Debug;
-  //    case 1:
-  //      return LogLevel.Warning;
-  //    case 2:
-  //      return LogLevel.Error;
-  //    default:
-  //      return null;
-  //  }
-  //}
+  private static LogLevel parseLogLevel(int logLevel) {
+    switch (logLevel) {
+      case 3:
+        return LogLevel.Trace;
+      case 4:
+        return LogLevel.Info;
+      case 5:
+        return LogLevel.Fatal;
+      case 1:
+        return LogLevel.Warning;
+      case 2:
+        return LogLevel.Error;
+      case 0:
+      default:
+        return LogLevel.Debug;
+    }
+  }
 
   @PluginMethod
   public void sendUserFeedback(PluginCall call) {

@@ -1,6 +1,9 @@
 /// <reference types="@capacitor/cli" />
 
-import type { LogEntry, SDKOptions, UserFeedbackOptions, UserFeedbackResult} from "@bugfender/types";
+import type {LogEntry} from "@bugfender/common";
+
+import type {ISDKOptions} from "./types/sdk-options";
+import type {UserFeedbackOptions} from "./user-feedback";
 
 declare module '@capacitor/cli' {
   export interface PluginsConfig {
@@ -8,17 +11,21 @@ declare module '@capacitor/cli' {
   }
 }
 
+interface URLResponse {
+  url: string
+}
+
 export interface BugfenderPlugin {
 
-  init(options: SDKOptions): Promise<void>
+  init(options: ISDKOptions): Promise<void>
 
   forceSendOnce(): void
 
-  getDeviceURL(): Promise<string>
+  getDeviceURL(): Promise<URLResponse>
 
-  getSessionURL(): Promise<string>
+  getSessionURL(): Promise<URLResponse>
 
-  getUserFeedback(options?: UserFeedbackOptions): Promise<UserFeedbackResult>
+  getUserFeedback(options?: UserFeedbackOptions): Promise<URLResponse>
 
   log(data: { text: string }): void
 
@@ -32,15 +39,15 @@ export interface BugfenderPlugin {
 
   fatal(data: { text: string }): void
 
-  removeDeviceKey(data: {key: string}): void
+  removeDeviceKey(data: { key: string }): void
 
-  sendCrash(data: { title: string, text: string }): Promise<string>
+  sendCrash(data: { title: string, text: string }): Promise<URLResponse>
 
-  sendIssue(data: { title: string, text: string }): Promise<string>
+  sendIssue(data: { title: string, text: string }): Promise<URLResponse>
 
   sendLog(log: LogEntry): void
 
-  sendUserFeedback(data: { title: string, text: string }): Promise<string>
+  sendUserFeedback(data: { title: string, text: string }): Promise<URLResponse>
 
   setDeviceBoolean(data: { key: string, value: boolean }): void
 
@@ -50,5 +57,5 @@ export interface BugfenderPlugin {
 
   setDeviceFloat(data: { key: string, value: number }): void
 
-  setForceEnabled(data: {state: boolean}): void
+  setForceEnabled(data: { state: boolean }): void
 }

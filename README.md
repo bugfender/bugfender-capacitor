@@ -46,12 +46,12 @@ npx cap sync
 ### init(...)
 
 ```typescript
-init(options: SDKOptions) => Promise<void>
+init(options: ISDKOptions) => Promise<void>
 ```
 
-| Param         | Type                                              |
-| ------------- | ------------------------------------------------- |
-| **`options`** | <code><a href="#sdkoptions">SDKOptions</a></code> |
+| Param         | Type                                                |
+| ------------- | --------------------------------------------------- |
+| **`options`** | <code><a href="#isdkoptions">ISDKOptions</a></code> |
 
 --------------------
 
@@ -68,10 +68,10 @@ forceSendOnce() => void
 ### getDeviceURL()
 
 ```typescript
-getDeviceURL() => Promise<string>
+getDeviceURL() => Promise<URLResponse>
 ```
 
-**Returns:** <code>Promise&lt;string&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
 
 --------------------
 
@@ -79,10 +79,10 @@ getDeviceURL() => Promise<string>
 ### getSessionURL()
 
 ```typescript
-getSessionURL() => Promise<string>
+getSessionURL() => Promise<URLResponse>
 ```
 
-**Returns:** <code>Promise&lt;string&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
 
 --------------------
 
@@ -90,14 +90,14 @@ getSessionURL() => Promise<string>
 ### getUserFeedback(...)
 
 ```typescript
-getUserFeedback(options?: UserFeedbackOptions | undefined) => Promise<UserFeedbackResult>
+getUserFeedback(options?: UserFeedbackOptions | undefined) => Promise<URLResponse>
 ```
 
 | Param         | Type                                                                |
 | ------------- | ------------------------------------------------------------------- |
 | **`options`** | <code><a href="#userfeedbackoptions">UserFeedbackOptions</a></code> |
 
-**Returns:** <code>Promise&lt;<a href="#userfeedbackresult">UserFeedbackResult</a>&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
 
 --------------------
 
@@ -196,14 +196,14 @@ removeDeviceKey(data: { key: string; }) => void
 ### sendCrash(...)
 
 ```typescript
-sendCrash(data: { title: string; text: string; }) => Promise<string>
+sendCrash(data: { title: string; text: string; }) => Promise<URLResponse>
 ```
 
 | Param      | Type                                          |
 | ---------- | --------------------------------------------- |
 | **`data`** | <code>{ title: string; text: string; }</code> |
 
-**Returns:** <code>Promise&lt;string&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
 
 --------------------
 
@@ -211,14 +211,14 @@ sendCrash(data: { title: string; text: string; }) => Promise<string>
 ### sendIssue(...)
 
 ```typescript
-sendIssue(data: { title: string; text: string; }) => Promise<string>
+sendIssue(data: { title: string; text: string; }) => Promise<URLResponse>
 ```
 
 | Param      | Type                                          |
 | ---------- | --------------------------------------------- |
 | **`data`** | <code>{ title: string; text: string; }</code> |
 
-**Returns:** <code>Promise&lt;string&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
 
 --------------------
 
@@ -239,14 +239,14 @@ sendLog(log: LogEntry) => void
 ### sendUserFeedback(...)
 
 ```typescript
-sendUserFeedback(data: { title: string; text: string; }) => Promise<string>
+sendUserFeedback(data: { title: string; text: string; }) => Promise<URLResponse>
 ```
 
 | Param      | Type                                          |
 | ---------- | --------------------------------------------- |
 | **`data`** | <code>{ title: string; text: string; }</code> |
 
-**Returns:** <code>Promise&lt;string&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
 
 --------------------
 
@@ -319,45 +319,60 @@ setForceEnabled(data: { state: boolean; }) => void
 ### Interfaces
 
 
-#### SDKOptions
+#### ISDKOptions
 
-| Prop                         | Type                 | Description                                                                                        |
-| ---------------------------- | -------------------- | -------------------------------------------------------------------------------------------------- |
-| **`appKey`**                 | <code>string</code>  | The app key to log into                                                                            |
-| **`apiURL`**                 | <code>string</code>  | Base URL to Bugfender API                                                                          |
-| **`build`**                  | <code>string</code>  | App build identifier                                                                               |
-| **`baseURL`**                | <code>string</code>  | Base URL to Bugfender web dashboard                                                                |
-| **`debug`**                  | <code>boolean</code> | Set SDK in debug mode                                                                              |
-| **`deviceName`**             | <code>string</code>  | Device name, this will be shown on the dashboard devices list. Defaults to browser + OS.           |
-| **`overrideConsoleMethods`** | <code>boolean</code> | Override default `window.console` so it also logs to Bugfender. Defaults to `true`.                |
-| **`printToConsole`**         | <code>boolean</code> | Print also with `window.console` when Bugfender logging methods are called. Defaults to `true`.    |
-| **`logBrowserEvents`**       | <code>boolean</code> | Register a handler for most common browser events to report them to Bugfender. Defaults to `true`. |
-| **`logUIEvents`**            | <code>boolean</code> | Register a handler for most common UI events to report them to Bugfender. Defaults to `true`.      |
-| **`registerErrorHandler`**   | <code>boolean</code> | Register error handler for uncaught errors that reports a crash to Bugfender. Defaults to `true`.  |
-| **`version`**                | <code>string</code>  | App version identifier                                                                             |
-
-
-#### UserFeedbackResult
-
-| Prop              | Type                 |
-| ----------------- | -------------------- |
-| **`isSent`**      | <code>boolean</code> |
-| **`feedbackURL`** | <code>string</code>  |
+| Prop                         | Type                 |
+| ---------------------------- | -------------------- |
+| **`appKey`**                 | <code>string</code>  |
+| **`apiURL`**                 | <code>string</code>  |
+| **`build`**                  | <code>string</code>  |
+| **`baseURL`**                | <code>string</code>  |
+| **`debug`**                  | <code>boolean</code> |
+| **`deviceName`**             | <code>string</code>  |
+| **`overrideConsoleMethods`** | <code>boolean</code> |
+| **`printToConsole`**         | <code>boolean</code> |
+| **`logBrowserEvents`**       | <code>boolean</code> |
+| **`logUIEvents`**            | <code>boolean</code> |
+| **`registerErrorHandler`**   | <code>boolean</code> |
+| **`version`**                | <code>string</code>  |
 
 
-#### UserFeedbackResultSuccess
+#### ISDKCommonOptions
 
-| Prop              | Type                | Description                     |
-| ----------------- | ------------------- | ------------------------------- |
-| **`isSent`**      | <code>true</code>   | The user has sent the feedback. |
-| **`feedbackURL`** | <code>string</code> | Bugfender URL for the feedback. |
+| Prop                         | Type                 | Description                                                                                                                    |
+| ---------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **`appKey`**                 | <code>string</code>  | The app key to log into                                                                                                        |
+| **`apiURL`**                 | <code>string</code>  | Base URL to Bugfender API                                                                                                      |
+| **`baseURL`**                | <code>string</code>  | Base URL to Bugfender web dashboard                                                                                            |
+| **`overrideConsoleMethods`** | <code>boolean</code> | Override default `window.console` so it also logs to Bugfender. Defaults to `true`.                                            |
+| **`printToConsole`**         | <code>boolean</code> | Print also with `window.console` when Bugfender logging methods are called. Defaults to `true`.                                |
+| **`logUIEvents`**            | <code>boolean</code> | Register a handler for most common UI events to report them to Bugfender. Defaults to `true`.                                  |
+| **`registerErrorHandler`**   | <code>boolean</code> | Register error handler for uncaught errors that reports a crash to Bugfender. Defaults to `true`.                              |
+| **`deviceName`**             | <code>string</code>  | Sets the name for the device. If the Device Name is not set, then the platform standard device name will be automatically sent |
 
 
-#### UserFeedbackResultCancel
+#### ISDKNativeOptions
 
-| Prop         | Type               | Description                                       |
-| ------------ | ------------------ | ------------------------------------------------- |
-| **`isSent`** | <code>false</code> | The user has closed the modal without sending it. |
+| Prop                          | Type                 | Description                                                                                                                         |
+| ----------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **`maximumLocalStorageSize`** | <code>number</code>  | Set the maximum size to store local log files in bytes (Native specific). Range accepted is from 1 MB to 50 MB. Defaults to 5 MB. * |
+| **`enableLogcatLogging`**     | <code>boolean</code> | Logs all logs written via Logcat (Android specific). Defaults to `false`.                                                           |
+
+
+#### ISDKWebOptions
+
+| Prop                   | Type                 | Description                                                                                                       |
+| ---------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **`logBrowserEvents`** | <code>boolean</code> | Register a handler for most common browser events to report them to Bugfender (Web specific). Defaults to `true`. |
+| **`build`**            | <code>string</code>  | App build identifier (Web specific)                                                                               |
+| **`version`**          | <code>string</code>  | App version identifier (Web specific)                                                                             |
+
+
+#### URLResponse
+
+| Prop      | Type                |
+| --------- | ------------------- |
+| **`url`** | <code>string</code> |
 
 
 #### UserFeedbackOptions
@@ -391,9 +406,9 @@ Log Entry object interface
 ### Type Aliases
 
 
-#### UserFeedbackResult
+#### ISDKOptions
 
-<code><a href="#userfeedbackresultsuccess">UserFeedbackResultSuccess</a> | <a href="#userfeedbackresultcancel">UserFeedbackResultCancel</a></code>
+<code><a href="#isdkcommonoptions">ISDKCommonOptions</a> & <a href="#isdknativeoptions">ISDKNativeOptions</a> & <a href="#isdkweboptions">ISDKWebOptions</a></code>
 
 
 ### Enums
