@@ -164,8 +164,7 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
 
   setDeviceKey(key: string, value: DeviceKeyValue): void {
     this.printToConsole.info(`Device key "${key}" set to "${value}"`);
-    if (typeof value === 'boolean'
-    ) {
+    if (typeof value === 'boolean') {
       this.bugfenderCapacitor.setDeviceBoolean({key: key, value: value});
     } else if (typeof value === 'string') {
       this.bugfenderCapacitor.setDeviceString({key: key, value: value});
