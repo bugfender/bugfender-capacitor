@@ -192,6 +192,6 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
   }
 
   private urlToString(from: { url: string }): string {
-    return from.url
+    return from.url;
   }
 }
