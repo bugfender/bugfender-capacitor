@@ -19,20 +19,23 @@ npx cap sync
 * [`getSessionURL()`](#getsessionurl)
 * [`getUserFeedback(...)`](#getuserfeedback)
 * [`log(...)`](#log)
+* [`log(...)`](#log)
+* [`warn(...)`](#warn)
 * [`warn(...)`](#warn)
 * [`error(...)`](#error)
+* [`error(...)`](#error)
+* [`trace(...)`](#trace)
 * [`trace(...)`](#trace)
 * [`info(...)`](#info)
+* [`info(...)`](#info)
+* [`fatal(...)`](#fatal)
 * [`fatal(...)`](#fatal)
 * [`removeDeviceKey(...)`](#removedevicekey)
-* [`sendCrash(...)`](#sendcrash)
-* [`sendIssue(...)`](#sendissue)
 * [`sendLog(...)`](#sendlog)
+* [`sendIssue(...)`](#sendissue)
+* [`sendCrash(...)`](#sendcrash)
 * [`sendUserFeedback(...)`](#senduserfeedback)
-* [`setDeviceBoolean(...)`](#setdeviceboolean)
-* [`setDeviceString(...)`](#setdevicestring)
-* [`setDeviceInteger(...)`](#setdeviceinteger)
-* [`setDeviceFloat(...)`](#setdevicefloat)
+* [`setDeviceKey(...)`](#setdevicekey)
 * [`setForceEnabled(...)`](#setforceenabled)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
@@ -46,12 +49,12 @@ npx cap sync
 ### init(...)
 
 ```typescript
-init(options: ISDKOptions) => Promise<void>
+init(options: SDKOptions) => Promise<void>
 ```
 
-| Param         | Type                                                |
-| ------------- | --------------------------------------------------- |
-| **`options`** | <code><a href="#isdkoptions">ISDKOptions</a></code> |
+| Param         | Type                                              |
+| ------------- | ------------------------------------------------- |
+| **`options`** | <code><a href="#sdkoptions">SDKOptions</a></code> |
 
 --------------------
 
@@ -68,10 +71,10 @@ forceSendOnce() => void
 ### getDeviceURL()
 
 ```typescript
-getDeviceURL() => Promise<URLResponse>
+getDeviceURL() => Promise<string>
 ```
 
-**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
+**Returns:** <code>Promise&lt;string&gt;</code>
 
 --------------------
 
@@ -79,10 +82,10 @@ getDeviceURL() => Promise<URLResponse>
 ### getSessionURL()
 
 ```typescript
-getSessionURL() => Promise<URLResponse>
+getSessionURL() => Promise<string>
 ```
 
-**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
+**Returns:** <code>Promise&lt;string&gt;</code>
 
 --------------------
 
@@ -90,14 +93,14 @@ getSessionURL() => Promise<URLResponse>
 ### getUserFeedback(...)
 
 ```typescript
-getUserFeedback(options?: UserFeedbackOptions | undefined) => Promise<URLResponse>
+getUserFeedback(options?: UserFeedbackOptions | undefined) => Promise<UserFeedbackResult>
 ```
 
 | Param         | Type                                                                |
 | ------------- | ------------------------------------------------------------------- |
 | **`options`** | <code><a href="#userfeedbackoptions">UserFeedbackOptions</a></code> |
 
-**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
+**Returns:** <code>Promise&lt;<a href="#userfeedbackresult">UserFeedbackResult</a>&gt;</code>
 
 --------------------
 
@@ -105,12 +108,27 @@ getUserFeedback(options?: UserFeedbackOptions | undefined) => Promise<URLRespons
 ### log(...)
 
 ```typescript
-log(data: { text: string; }) => void
+log(obj: unknown, ...objs: unknown[]) => void
 ```
 
-| Param      | Type                           |
-| ---------- | ------------------------------ |
-| **`data`** | <code>{ text: string; }</code> |
+| Param      | Type                   |
+| ---------- | ---------------------- |
+| **`obj`**  | <code>unknown</code>   |
+| **`objs`** | <code>unknown[]</code> |
+
+--------------------
+
+
+### log(...)
+
+```typescript
+log(msg: string, ...subst: unknown[]) => void
+```
+
+| Param       | Type                   |
+| ----------- | ---------------------- |
+| **`msg`**   | <code>string</code>    |
+| **`subst`** | <code>unknown[]</code> |
 
 --------------------
 
@@ -118,12 +136,27 @@ log(data: { text: string; }) => void
 ### warn(...)
 
 ```typescript
-warn(data: { text: string; }) => void
+warn(obj: unknown, ...objs: unknown[]) => void
 ```
 
-| Param      | Type                           |
-| ---------- | ------------------------------ |
-| **`data`** | <code>{ text: string; }</code> |
+| Param      | Type                   |
+| ---------- | ---------------------- |
+| **`obj`**  | <code>unknown</code>   |
+| **`objs`** | <code>unknown[]</code> |
+
+--------------------
+
+
+### warn(...)
+
+```typescript
+warn(msg: string, ...subst: unknown[]) => void
+```
+
+| Param       | Type                   |
+| ----------- | ---------------------- |
+| **`msg`**   | <code>string</code>    |
+| **`subst`** | <code>unknown[]</code> |
 
 --------------------
 
@@ -131,12 +164,27 @@ warn(data: { text: string; }) => void
 ### error(...)
 
 ```typescript
-error(data: { text: string; }) => void
+error(obj: unknown, ...objs: unknown[]) => void
 ```
 
-| Param      | Type                           |
-| ---------- | ------------------------------ |
-| **`data`** | <code>{ text: string; }</code> |
+| Param      | Type                   |
+| ---------- | ---------------------- |
+| **`obj`**  | <code>unknown</code>   |
+| **`objs`** | <code>unknown[]</code> |
+
+--------------------
+
+
+### error(...)
+
+```typescript
+error(msg: string, ...subst: unknown[]) => void
+```
+
+| Param       | Type                   |
+| ----------- | ---------------------- |
+| **`msg`**   | <code>string</code>    |
+| **`subst`** | <code>unknown[]</code> |
 
 --------------------
 
@@ -144,12 +192,27 @@ error(data: { text: string; }) => void
 ### trace(...)
 
 ```typescript
-trace(data: { text: string; }) => void
+trace(obj: unknown, ...objs: unknown[]) => void
 ```
 
-| Param      | Type                           |
-| ---------- | ------------------------------ |
-| **`data`** | <code>{ text: string; }</code> |
+| Param      | Type                   |
+| ---------- | ---------------------- |
+| **`obj`**  | <code>unknown</code>   |
+| **`objs`** | <code>unknown[]</code> |
+
+--------------------
+
+
+### trace(...)
+
+```typescript
+trace(msg: string, ...subst: unknown[]) => void
+```
+
+| Param       | Type                   |
+| ----------- | ---------------------- |
+| **`msg`**   | <code>string</code>    |
+| **`subst`** | <code>unknown[]</code> |
 
 --------------------
 
@@ -157,12 +220,27 @@ trace(data: { text: string; }) => void
 ### info(...)
 
 ```typescript
-info(data: { text: string; }) => void
+info(obj: unknown, ...objs: unknown[]) => void
 ```
 
-| Param      | Type                           |
-| ---------- | ------------------------------ |
-| **`data`** | <code>{ text: string; }</code> |
+| Param      | Type                   |
+| ---------- | ---------------------- |
+| **`obj`**  | <code>unknown</code>   |
+| **`objs`** | <code>unknown[]</code> |
+
+--------------------
+
+
+### info(...)
+
+```typescript
+info(msg: string, ...subst: unknown[]) => void
+```
+
+| Param       | Type                   |
+| ----------- | ---------------------- |
+| **`msg`**   | <code>string</code>    |
+| **`subst`** | <code>unknown[]</code> |
 
 --------------------
 
@@ -170,12 +248,27 @@ info(data: { text: string; }) => void
 ### fatal(...)
 
 ```typescript
-fatal(data: { text: string; }) => void
+fatal(obj: unknown, ...objs: unknown[]) => void
 ```
 
-| Param      | Type                           |
-| ---------- | ------------------------------ |
-| **`data`** | <code>{ text: string; }</code> |
+| Param      | Type                   |
+| ---------- | ---------------------- |
+| **`obj`**  | <code>unknown</code>   |
+| **`objs`** | <code>unknown[]</code> |
+
+--------------------
+
+
+### fatal(...)
+
+```typescript
+fatal(msg: string, ...subst: unknown[]) => void
+```
+
+| Param       | Type                   |
+| ----------- | ---------------------- |
+| **`msg`**   | <code>string</code>    |
+| **`subst`** | <code>unknown[]</code> |
 
 --------------------
 
@@ -183,42 +276,12 @@ fatal(data: { text: string; }) => void
 ### removeDeviceKey(...)
 
 ```typescript
-removeDeviceKey(data: { key: string; }) => void
+removeDeviceKey(key: string) => void
 ```
 
-| Param      | Type                          |
-| ---------- | ----------------------------- |
-| **`data`** | <code>{ key: string; }</code> |
-
---------------------
-
-
-### sendCrash(...)
-
-```typescript
-sendCrash(data: { title: string; text: string; }) => Promise<URLResponse>
-```
-
-| Param      | Type                                          |
-| ---------- | --------------------------------------------- |
-| **`data`** | <code>{ title: string; text: string; }</code> |
-
-**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
-
---------------------
-
-
-### sendIssue(...)
-
-```typescript
-sendIssue(data: { title: string; text: string; }) => Promise<URLResponse>
-```
-
-| Param      | Type                                          |
-| ---------- | --------------------------------------------- |
-| **`data`** | <code>{ title: string; text: string; }</code> |
-
-**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
+| Param     | Type                |
+| --------- | ------------------- |
+| **`key`** | <code>string</code> |
 
 --------------------
 
@@ -236,69 +299,64 @@ sendLog(log: LogEntry) => void
 --------------------
 
 
+### sendIssue(...)
+
+```typescript
+sendIssue(title: string, text: string) => Promise<string>
+```
+
+| Param       | Type                |
+| ----------- | ------------------- |
+| **`title`** | <code>string</code> |
+| **`text`**  | <code>string</code> |
+
+**Returns:** <code>Promise&lt;string&gt;</code>
+
+--------------------
+
+
+### sendCrash(...)
+
+```typescript
+sendCrash(title: string, text: string) => Promise<string>
+```
+
+| Param       | Type                |
+| ----------- | ------------------- |
+| **`title`** | <code>string</code> |
+| **`text`**  | <code>string</code> |
+
+**Returns:** <code>Promise&lt;string&gt;</code>
+
+--------------------
+
+
 ### sendUserFeedback(...)
 
 ```typescript
-sendUserFeedback(data: { title: string; text: string; }) => Promise<URLResponse>
+sendUserFeedback(title: string, text: string) => Promise<string>
 ```
 
-| Param      | Type                                          |
-| ---------- | --------------------------------------------- |
-| **`data`** | <code>{ title: string; text: string; }</code> |
+| Param       | Type                |
+| ----------- | ------------------- |
+| **`title`** | <code>string</code> |
+| **`text`**  | <code>string</code> |
 
-**Returns:** <code>Promise&lt;<a href="#urlresponse">URLResponse</a>&gt;</code>
+**Returns:** <code>Promise&lt;string&gt;</code>
 
 --------------------
 
 
-### setDeviceBoolean(...)
+### setDeviceKey(...)
 
 ```typescript
-setDeviceBoolean(data: { key: string; value: boolean; }) => void
+setDeviceKey(key: string, value: DeviceKeyValue) => void
 ```
 
-| Param      | Type                                          |
-| ---------- | --------------------------------------------- |
-| **`data`** | <code>{ key: string; value: boolean; }</code> |
-
---------------------
-
-
-### setDeviceString(...)
-
-```typescript
-setDeviceString(data: { key: string; value: string; }) => void
-```
-
-| Param      | Type                                         |
-| ---------- | -------------------------------------------- |
-| **`data`** | <code>{ key: string; value: string; }</code> |
-
---------------------
-
-
-### setDeviceInteger(...)
-
-```typescript
-setDeviceInteger(data: { key: string; value: number; }) => void
-```
-
-| Param      | Type                                         |
-| ---------- | -------------------------------------------- |
-| **`data`** | <code>{ key: string; value: number; }</code> |
-
---------------------
-
-
-### setDeviceFloat(...)
-
-```typescript
-setDeviceFloat(data: { key: string; value: number; }) => void
-```
-
-| Param      | Type                                         |
-| ---------- | -------------------------------------------- |
-| **`data`** | <code>{ key: string; value: number; }</code> |
+| Param       | Type                                                      |
+| ----------- | --------------------------------------------------------- |
+| **`key`**   | <code>string</code>                                       |
+| **`value`** | <code><a href="#devicekeyvalue">DeviceKeyValue</a></code> |
 
 --------------------
 
@@ -306,12 +364,12 @@ setDeviceFloat(data: { key: string; value: number; }) => void
 ### setForceEnabled(...)
 
 ```typescript
-setForceEnabled(data: { state: boolean; }) => void
+setForceEnabled(state: boolean) => void
 ```
 
-| Param      | Type                             |
-| ---------- | -------------------------------- |
-| **`data`** | <code>{ state: boolean; }</code> |
+| Param       | Type                 |
+| ----------- | -------------------- |
+| **`state`** | <code>boolean</code> |
 
 --------------------
 
@@ -319,60 +377,45 @@ setForceEnabled(data: { state: boolean; }) => void
 ### Interfaces
 
 
-#### ISDKOptions
+#### SDKOptions
 
-| Prop                         | Type                 |
-| ---------------------------- | -------------------- |
-| **`appKey`**                 | <code>string</code>  |
-| **`apiURL`**                 | <code>string</code>  |
-| **`build`**                  | <code>string</code>  |
-| **`baseURL`**                | <code>string</code>  |
-| **`debug`**                  | <code>boolean</code> |
-| **`deviceName`**             | <code>string</code>  |
-| **`overrideConsoleMethods`** | <code>boolean</code> |
-| **`printToConsole`**         | <code>boolean</code> |
-| **`logBrowserEvents`**       | <code>boolean</code> |
-| **`logUIEvents`**            | <code>boolean</code> |
-| **`registerErrorHandler`**   | <code>boolean</code> |
-| **`version`**                | <code>string</code>  |
-
-
-#### ISDKCommonOptions
-
-| Prop                         | Type                 | Description                                                                                                                    |
-| ---------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| **`appKey`**                 | <code>string</code>  | The app key to log into                                                                                                        |
-| **`apiURL`**                 | <code>string</code>  | Base URL to Bugfender API                                                                                                      |
-| **`baseURL`**                | <code>string</code>  | Base URL to Bugfender web dashboard                                                                                            |
-| **`overrideConsoleMethods`** | <code>boolean</code> | Override default `window.console` so it also logs to Bugfender. Defaults to `true`.                                            |
-| **`printToConsole`**         | <code>boolean</code> | Print also with `window.console` when Bugfender logging methods are called. Defaults to `true`.                                |
-| **`logUIEvents`**            | <code>boolean</code> | Register a handler for most common UI events to report them to Bugfender. Defaults to `true`.                                  |
-| **`registerErrorHandler`**   | <code>boolean</code> | Register error handler for uncaught errors that reports a crash to Bugfender. Defaults to `true`.                              |
-| **`deviceName`**             | <code>string</code>  | Sets the name for the device. If the Device Name is not set, then the platform standard device name will be automatically sent |
+| Prop                         | Type                 | Description                                                                                        |
+| ---------------------------- | -------------------- | -------------------------------------------------------------------------------------------------- |
+| **`appKey`**                 | <code>string</code>  | The app key to log into                                                                            |
+| **`apiURL`**                 | <code>string</code>  | Base URL to Bugfender API                                                                          |
+| **`build`**                  | <code>string</code>  | App build identifier                                                                               |
+| **`baseURL`**                | <code>string</code>  | Base URL to Bugfender web dashboard                                                                |
+| **`debug`**                  | <code>boolean</code> | Set SDK in debug mode                                                                              |
+| **`deviceName`**             | <code>string</code>  | Device name, this will be shown on the dashboard devices list. Defaults to browser + OS.           |
+| **`overrideConsoleMethods`** | <code>boolean</code> | Override default `window.console` so it also logs to Bugfender. Defaults to `true`.                |
+| **`printToConsole`**         | <code>boolean</code> | Print also with `window.console` when Bugfender logging methods are called. Defaults to `true`.    |
+| **`logBrowserEvents`**       | <code>boolean</code> | Register a handler for most common browser events to report them to Bugfender. Defaults to `true`. |
+| **`logUIEvents`**            | <code>boolean</code> | Register a handler for most common UI events to report them to Bugfender. Defaults to `true`.      |
+| **`registerErrorHandler`**   | <code>boolean</code> | Register error handler for uncaught errors that reports a crash to Bugfender. Defaults to `true`.  |
+| **`version`**                | <code>string</code>  | App version identifier                                                                             |
 
 
-#### ISDKNativeOptions
+#### UserFeedbackResult
 
-| Prop                          | Type                 | Description                                                                                                                         |
-| ----------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **`maximumLocalStorageSize`** | <code>number</code>  | Set the maximum size to store local log files in bytes (Native specific). Range accepted is from 1 MB to 50 MB. Defaults to 5 MB. * |
-| **`enableLogcatLogging`**     | <code>boolean</code> | Logs all logs written via Logcat (Android specific). Defaults to `false`.                                                           |
-
-
-#### ISDKWebOptions
-
-| Prop                   | Type                 | Description                                                                                                       |
-| ---------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **`logBrowserEvents`** | <code>boolean</code> | Register a handler for most common browser events to report them to Bugfender (Web specific). Defaults to `true`. |
-| **`build`**            | <code>string</code>  | App build identifier (Web specific)                                                                               |
-| **`version`**          | <code>string</code>  | App version identifier (Web specific)                                                                             |
+| Prop              | Type                 |
+| ----------------- | -------------------- |
+| **`isSent`**      | <code>boolean</code> |
+| **`feedbackURL`** | <code>string</code>  |
 
 
-#### URLResponse
+#### UserFeedbackResultSuccess
 
-| Prop      | Type                |
-| --------- | ------------------- |
-| **`url`** | <code>string</code> |
+| Prop              | Type                | Description                     |
+| ----------------- | ------------------- | ------------------------------- |
+| **`isSent`**      | <code>true</code>   | The user has sent the feedback. |
+| **`feedbackURL`** | <code>string</code> | Bugfender URL for the feedback. |
+
+
+#### UserFeedbackResultCancel
+
+| Prop         | Type               | Description                                       |
+| ------------ | ------------------ | ------------------------------------------------- |
+| **`isSent`** | <code>false</code> | The user has closed the modal without sending it. |
 
 
 #### UserFeedbackOptions
@@ -406,9 +449,14 @@ Log Entry object interface
 ### Type Aliases
 
 
-#### ISDKOptions
+#### UserFeedbackResult
 
-<code><a href="#isdkcommonoptions">ISDKCommonOptions</a> & <a href="#isdknativeoptions">ISDKNativeOptions</a> & <a href="#isdkweboptions">ISDKWebOptions</a></code>
+<code><a href="#userfeedbackresultsuccess">UserFeedbackResultSuccess</a> | <a href="#userfeedbackresultcancel">UserFeedbackResultCancel</a></code>
+
+
+#### DeviceKeyValue
+
+<code>string | number | boolean</code>
 
 
 ### Enums

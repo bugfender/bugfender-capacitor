@@ -59,7 +59,7 @@ public class BugfenderPlugin extends Plugin {
     if (registerErrorHandler) {
       Bugfender.enableCrashReporting();
     }
-    // endregion before init
+    // endregion after init
 
     call.resolve();
   }
