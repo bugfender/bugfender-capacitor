@@ -184,10 +184,7 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
   }
 
   private mapPromise<A, B>(promise: Promise<A>, mappingWith: (from: A) => B): Promise<B> {
-    return new Promise<B>((resolve, reject) =>
-      promise
-        .then(response => resolve(mappingWith(response)))
-        .catch(e => reject(e)));
+    return promise.then(response => mappingWith(response));
   }
 
   private urlToString(from: { url: string }): string {
