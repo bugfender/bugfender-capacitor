@@ -1,92 +1,193 @@
-// @ts-nocheck
-// TODO remove ts-nocheck
-import {
+import type {
   BugfenderFacade,
   DeviceKeyValue,
   LogEntry,
-  SDKOptions,
   UserFeedbackOptions,
   UserFeedbackResult
 } from "@bugfender/common";
-import {BugfenderPlugin} from "./definitions";
+import {
+  format,
+  LogLevel, PrintToConsole
+} from "@bugfender/common";
+
+import type {BugfenderPlugin} from "./definitions";
+import {OverrideConsoleMethods} from "./override-console-methods";
+import {RegisterErrorHandler} from "./register-error-handler";
+import {SdkOptionsSanitizer} from "./sdk-options-sanitizer";
+import type {ISDKOptions} from "./types/sdk-options";
+import {UserFeedbackOptionsSanitizer} from "./user-feedback";
 
 export class BugfenderCapacitorWrapper implements BugfenderFacade {
+  private overrideConsoleMethods = new OverrideConsoleMethods(window);
+  private printToConsole = new PrintToConsole(global.console);
+  private sdkOptionsSanitizer: SdkOptionsSanitizer = new SdkOptionsSanitizer();
+  private initialized = false;
+
   constructor(private readonly bugfenderCapacitor: BugfenderPlugin) {
-
   }
 
-  error(obj: unknown, ...objs: unknown[]): void;
-  error(msg: string, ...subst: unknown[]): void;
-  error(obj: unknown, ...objs: unknown[]): void {
-  }
+  init(options: ISDKOptions): Promise<void> {
+    let promise: Promise<void>;
 
-  fatal(obj: unknown, ...objs: unknown[]): void;
-  fatal(msg: string, ...subst: unknown[]): void;
-  fatal(obj: unknown, ...objs: unknown[]): void {
+    if (!this.initialized) {
+      const sanitizedOptions = this.sdkOptionsSanitizer.sanitize(options);
 
+      promise = this.bugfenderCapacitor.init(sanitizedOptions)
+
+      if (sanitizedOptions.overrideConsoleMethods) {
+        this.overrideConsoleMethods.init(this.bugfenderCapacitor);
+      }
+      this.printToConsole.init(sanitizedOptions.printToConsole ?? true);
+
+      if (sanitizedOptions.registerErrorHandler) {
+        new RegisterErrorHandler(window).init(this.bugfenderCapacitor);
+      }
+    } else {
+      promise = Promise.resolve()
+    }
+
+    this.initialized = true;
+
+    return promise
   }
 
   forceSendOnce(): void {
+    this.printToConsole.info(`Force send once`);
+    this.bugfenderCapacitor.forceSendOnce()
   }
 
   getDeviceURL(): Promise<string> {
-    return Promise.resolve("")
+    return this.mapPromise(
+      this.bugfenderCapacitor.getDeviceURL(),
+      this.urlToString
+    )
   }
 
   getSessionURL(): Promise<string> {
-    return Promise.resolve("");
+    return this.mapPromise(
+      this.bugfenderCapacitor.getSessionURL(),
+      this.urlToString
+    )
   }
 
   getUserFeedback(options?: UserFeedbackOptions): Promise<UserFeedbackResult> {
-    return Promise.resolve({isSent: false, feedbackURL: ""});
-  }
-
-  info(obj: unknown, ...objs: unknown[]): void;
-  info(msg: string, ...subst: unknown[]): void;
-  info(obj: unknown, ...objs: unknown[]): void {
-  }
-
-  init(options: SDKOptions): Promise<void> {
-    return Promise.resolve(undefined);
+    const sanitizedOptions = new UserFeedbackOptionsSanitizer().sanitize(options)
+    return new Promise<UserFeedbackResult>((resolve) =>
+      this.bugfenderCapacitor.getUserFeedback(sanitizedOptions)
+        .then(response => resolve({isSent: true, feedbackURL: response.url}))
+        .catch(() => resolve({isSent: false})));
   }
 
   log(obj: unknown, ...objs: unknown[]): void;
   log(msg: string, ...subst: unknown[]): void;
-  log(obj: unknown, ...objs: unknown[]): void {
-    this.bugfenderCapacitor.log({obj: "hola que tal"})
-  }
+  log(...parameters: unknown[]): void {
+    this.printToConsole.log(...parameters);
 
-  removeDeviceKey(key: string): void {
-  }
-
-  sendCrash(title: string, text: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  sendIssue(title: string, text: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  sendLog(log: LogEntry): void {
-  }
-
-  sendUserFeedback(title: string, text: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  setDeviceKey(key: string, value: DeviceKeyValue): void {
-  }
-
-  setForceEnabled(state: boolean): void {
-  }
-
-  trace(obj: unknown, ...objs: unknown[]): void;
-  trace(msg: string, ...subst: unknown[]): void;
-  trace(obj: unknown, ...objs: unknown[]): void {
+    this.bugfenderCapacitor.log({text: format([...parameters])})
   }
 
   warn(obj: unknown, ...objs: unknown[]): void;
   warn(msg: string, ...subst: unknown[]): void;
-  warn(obj: unknown, ...objs: unknown[]): void {
+  warn(...parameters: unknown[]): void {
+    this.printToConsole.warn(...parameters);
+    this.bugfenderCapacitor.warn({text: format([...parameters])})
+  }
+
+  error(obj: unknown, ...objs: unknown[]): void;
+  error(msg: string, ...subst: unknown[]): void;
+  error(...parameters: unknown[]): void {
+    this.printToConsole.error(...parameters);
+    this.bugfenderCapacitor.error({text: format([...parameters])})
+  }
+
+  trace(obj: unknown, ...objs: unknown[]): void;
+  trace(msg: string, ...subst: unknown[]): void;
+  trace(...parameters: unknown[]): void {
+    this.printToConsole.trace(...parameters);
+    this.bugfenderCapacitor.trace({text: format([...parameters])})
+  }
+
+  info(obj: unknown, ...objs: unknown[]): void;
+  info(msg: string, ...subst: unknown[]): void;
+  info(...parameters: unknown[]): void {
+    this.printToConsole.info(...parameters);
+    this.bugfenderCapacitor.info({text: format([...parameters])})
+  }
+
+  fatal(obj: unknown, ...objs: unknown[]): void;
+  fatal(msg: string, ...subst: unknown[]): void;
+  fatal(...parameters: unknown[]): void {
+    this.printToConsole.error(...parameters);
+    this.bugfenderCapacitor.fatal({text: format([...parameters])})
+  }
+
+  removeDeviceKey(key: string): void {
+    this.printToConsole.info(`Device key "${key}" removed`);
+    this.bugfenderCapacitor.removeDeviceKey({key: key})
+  }
+
+  sendCrash(title: string, text: string): Promise<string> {
+    this.printToConsole.error(`Crash: ${title}.\n${text}`);
+    return this.mapPromise(
+      this.bugfenderCapacitor.sendCrash({title: title, text: text}),
+      this.urlToString
+    )
+  }
+
+  sendIssue(title: string, text: string): Promise<string> {
+    this.printToConsole.warn(`Issue: ${title}.\n${text}`);
+    return this.mapPromise(
+      this.bugfenderCapacitor.sendIssue({title: title, text: text}),
+      this.urlToString
+    )
+  }
+
+  sendLog(log: LogEntry): void {
+    this.printToConsole.printLog(log);
+    this.bugfenderCapacitor.sendLog({
+      line: log.line ?? 0,
+      method: log.method ?? '',
+      file: log.file ?? '',
+      level: log.level ?? LogLevel.Debug,
+      tag: log.tag ?? '',
+      text: log.text ?? ''
+    })
+  }
+
+  sendUserFeedback(title: string, text: string): Promise<string> {
+    this.printToConsole.info(`User Feedback: ${title}.\n${text}`);
+    return this.mapPromise(
+      this.bugfenderCapacitor.sendUserFeedback({title: title, text: text}),
+      this.urlToString
+    )
+  }
+
+  setDeviceKey(key: string, value: DeviceKeyValue): void {
+    this.printToConsole.info(`Device key "${key}" set to "${value}"`);
+    if (typeof value === 'boolean') {
+      this.bugfenderCapacitor.setDeviceBoolean({key: key, value: value});
+    } else if (typeof value === 'string') {
+      this.bugfenderCapacitor.setDeviceString({key: key, value: value});
+    } else {
+      // typeof value === 'number'
+      if (Number.isInteger(value)) {
+        this.bugfenderCapacitor.setDeviceInteger({key: key, value: value});
+      } else {
+        this.bugfenderCapacitor.setDeviceFloat({key: key, value: value});
+      }
+    }
+  }
+
+  setForceEnabled(state: boolean): void {
+    this.printToConsole.info(`Set force enabled set to ${state}`);
+    this.bugfenderCapacitor.setForceEnabled({state: state})
+  }
+
+  private mapPromise<A, B>(promise: Promise<A>, mappingWith: (from: A) => B): Promise<B> {
+    return promise.then(response => mappingWith(response));
+  }
+
+  private urlToString(from: { url: string }): string {
+    return from.url;
   }
 }

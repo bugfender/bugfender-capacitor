@@ -19,7 +19,8 @@
     }
   },
   "alias": {
-    "buffer": false
+    "buffer": false,
+    "process": false
   },
   "dependencies": {
     "@bugfender/capacitor": "file:..",
@@ -32,6 +33,7 @@
     "@capacitor/cli": "latest",
     "buffer": "^6.0.3",
     "parcel": "^2.5.0",
+    "process": "^0.11.10",
     "serve": "^13.0.2"
   },
   "author": "",
