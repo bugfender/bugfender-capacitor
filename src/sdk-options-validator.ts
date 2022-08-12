@@ -1,10 +1,7 @@
-import type {ValidationRules} from "@bugfender/common";
+import type {SDKOptions, ValidationRules} from "@bugfender/common";
 import {prepareOptions, validate} from "@bugfender/common";
 
-import type {ISDKOptions} from "./types/sdk-options";
-
-
-export class SdkOptionsSanitizer {
+export class SdkOptionsValidator {
   protected rules: ValidationRules = {
     appKey: ['required', 'string'],
     apiURL: ['string', 'url'],
@@ -17,7 +14,7 @@ export class SdkOptionsSanitizer {
     version: ['string'],
   };
 
-  public sanitize(options: ISDKOptions): ISDKOptions {
+  public init(options: SDKOptions): SDKOptions {
     // Prepare options
     options = prepareOptions(options);
 

@@ -379,20 +379,22 @@ setForceEnabled(state: boolean) => void
 
 #### SDKOptions
 
-| Prop                         | Type                 | Description                                                                                        |
-| ---------------------------- | -------------------- | -------------------------------------------------------------------------------------------------- |
-| **`appKey`**                 | <code>string</code>  | The app key to log into                                                                            |
-| **`apiURL`**                 | <code>string</code>  | Base URL to Bugfender API                                                                          |
-| **`build`**                  | <code>string</code>  | App build identifier                                                                               |
-| **`baseURL`**                | <code>string</code>  | Base URL to Bugfender web dashboard                                                                |
-| **`debug`**                  | <code>boolean</code> | Set SDK in debug mode                                                                              |
-| **`deviceName`**             | <code>string</code>  | Device name, this will be shown on the dashboard devices list. Defaults to browser + OS.           |
-| **`overrideConsoleMethods`** | <code>boolean</code> | Override default `window.console` so it also logs to Bugfender. Defaults to `true`.                |
-| **`printToConsole`**         | <code>boolean</code> | Print also with `window.console` when Bugfender logging methods are called. Defaults to `true`.    |
-| **`logBrowserEvents`**       | <code>boolean</code> | Register a handler for most common browser events to report them to Bugfender. Defaults to `true`. |
-| **`logUIEvents`**            | <code>boolean</code> | Register a handler for most common UI events to report them to Bugfender. Defaults to `true`.      |
-| **`registerErrorHandler`**   | <code>boolean</code> | Register error handler for uncaught errors that reports a crash to Bugfender. Defaults to `true`.  |
-| **`version`**                | <code>string</code>  | App version identifier                                                                             |
+| Prop                          | Type                 | Description                                                                                                                            |
+| ----------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **`appKey`**                  | <code>string</code>  | The app key to log into                                                                                                                |
+| **`apiURL`**                  | <code>string</code>  | Base URL to Bugfender API                                                                                                              |
+| **`build`**                   | <code>string</code>  | App build identifier                                                                                                                   |
+| **`baseURL`**                 | <code>string</code>  | Base URL to Bugfender web dashboard                                                                                                    |
+| **`debug`**                   | <code>boolean</code> | Set SDK in debug mode                                                                                                                  |
+| **`deviceName`**              | <code>string</code>  | Device name, this will be shown on the dashboard devices list. Defaults to browser + OS.                                               |
+| **`overrideConsoleMethods`**  | <code>boolean</code> | Override default `window.console` so it also logs to Bugfender. Defaults to `true`.                                                    |
+| **`printToConsole`**          | <code>boolean</code> | Print also with `window.console` when Bugfender logging methods are called. Defaults to `true`.                                        |
+| **`logBrowserEvents`**        | <code>boolean</code> | Register a handler for most common browser events to report them to Bugfender. Defaults to `true`.                                     |
+| **`logUIEvents`**             | <code>boolean</code> | Register a handler for most common UI events to report them to Bugfender. Defaults to `true`.                                          |
+| **`registerErrorHandler`**    | <code>boolean</code> | Register error handler for uncaught errors that reports a crash to Bugfender. Defaults to `true`.                                      |
+| **`version`**                 | <code>string</code>  | App version identifier                                                                                                                 |
+| **`maximumLocalStorageSize`** | <code>number</code>  | Set the maximum size to store local log files in bytes. Range accepted is from 1MB to 50MB. Defaults to 5MB. **iOS & Android only**. * |
+| **`enableLogcatLogging`**     | <code>boolean</code> | Logs all logs written via Logcat. Defaults to `false`. **Android only**.                                                               |
 
 
 #### UserFeedbackResult
@@ -422,13 +424,14 @@ setForceEnabled(state: boolean) => void
 
 Options object for `Bugfender.getUserFeedback` with customised modal strings.
 
-| Prop                      | Type                | Description                |
-| ------------------------- | ------------------- | -------------------------- |
-| **`title`**               | <code>string</code> | Default: `Feedback`.       |
-| **`hint`**                | <code>string</code> | Default: `undefined`.      |
-| **`subjectPlaceholder`**  | <code>string</code> | Default: `Subject…`.       |
-| **`feedbackPlaceholder`** | <code>string</code> | Default: `Your feedback…`. |
-| **`submitLabel`**         | <code>string</code> | Default: `Send`.           |
+| Prop                      | Type                | Description                                                 |
+| ------------------------- | ------------------- | ----------------------------------------------------------- |
+| **`title`**               | <code>string</code> | Default: `Feedback`.                                        |
+| **`hint`**                | <code>string</code> | Default: `Please insert your feedback here and click send`. |
+| **`subjectPlaceholder`**  | <code>string</code> | Default: `Subject…`.                                        |
+| **`feedbackPlaceholder`** | <code>string</code> | Default: `Your feedback…`.                                  |
+| **`submitLabel`**         | <code>string</code> | Default: `Send`.                                            |
+| **`closeLabel`**          | <code>string</code> | Default: `Close`. **iOS only**.                             |
 
 
 #### LogEntry

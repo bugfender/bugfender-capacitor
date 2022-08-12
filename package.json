@@ -78,7 +78,7 @@
     }
   },
   "dependencies": {
-    "@bugfender/common": "^1.0.0-alpha.0",
+    "@bugfender/common": "^1.0.0-alpha.4",
     "@bugfender/sdk": "^2.1.0"
   }
 }
