@@ -1,6 +1,6 @@
 # @bugfender/capacitor
 
-Remote logging with Bugfender
+Remote logging, crash reporting and in-app user feedback with [Bugfender](https://bugfender.com) and [Capacitor](https://capacitorjs.com).
 
 ## Install
 
@@ -10,6 +10,8 @@ npx cap sync
 ```
 
 ## API
+
+Please check the following URL for a complete API reference: [https://js.bugfender.com](https://js.bugfender.com).
 
 <docgen-index>
 
