@@ -28,7 +28,7 @@ document.getElementById("send_logs_btn")?.addEventListener("click", function () 
   Bugfender.sendLog({
     level: LogLevel.Debug,
     tag: 'REACT',
-    text: 'Im being called from React!',
+    text: 'Im being called from Capacitor!',
   });
 
   Bugfender.log('Log without break lines in the middle of the message');

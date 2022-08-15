@@ -1,36 +1,36 @@
 import type {
   BugfenderFacade,
   DeviceKeyValue,
-  LogEntry,
+  LogEntry, SDKOptions,
   UserFeedbackOptions,
   UserFeedbackResult
 } from "@bugfender/common";
 import {
   format,
-  LogLevel, PrintToConsole
+  LogLevel,
+  PrintToConsole,
+  RegisterErrorHandler,
+  UserFeedbackOptionsValidator
 } from "@bugfender/common";
 
 import type {BugfenderPlugin} from "./definitions";
 import {OverrideConsoleMethods} from "./override-console-methods";
-import {RegisterErrorHandler} from "./register-error-handler";
-import {SdkOptionsSanitizer} from "./sdk-options-sanitizer";
-import type {ISDKOptions} from "./types/sdk-options";
-import {UserFeedbackOptionsSanitizer} from "./user-feedback";
+import {SdkOptionsValidator} from "./sdk-options-validator";
 
 export class BugfenderCapacitorWrapper implements BugfenderFacade {
   private overrideConsoleMethods = new OverrideConsoleMethods(window);
   private printToConsole = new PrintToConsole(global.console);
-  private sdkOptionsSanitizer: SdkOptionsSanitizer = new SdkOptionsSanitizer();
+  private sdkOptionsValidator: SdkOptionsValidator = new SdkOptionsValidator();
   private initialized = false;
 
   constructor(private readonly bugfenderCapacitor: BugfenderPlugin) {
   }
 
-  init(options: ISDKOptions): Promise<void> {
+  init(options: SDKOptions): Promise<void> {
     let promise: Promise<void>;
 
     if (!this.initialized) {
-      const sanitizedOptions = this.sdkOptionsSanitizer.sanitize(options);
+      const sanitizedOptions = this.sdkOptionsValidator.init(options);
 
       promise = this.bugfenderCapacitor.init(sanitizedOptions)
 
@@ -40,7 +40,7 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
       this.printToConsole.init(sanitizedOptions.printToConsole ?? true);
 
       if (sanitizedOptions.registerErrorHandler) {
-        new RegisterErrorHandler(window).init(this.bugfenderCapacitor);
+        new RegisterErrorHandler(window).init(this);
       }
     } else {
       promise = Promise.resolve()
@@ -71,7 +71,7 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
   }
 
   getUserFeedback(options?: UserFeedbackOptions): Promise<UserFeedbackResult> {
-    const sanitizedOptions = new UserFeedbackOptionsSanitizer().sanitize(options)
+    const sanitizedOptions = new UserFeedbackOptionsValidator().init(options)
     return new Promise<UserFeedbackResult>((resolve) =>
       this.bugfenderCapacitor.getUserFeedback(sanitizedOptions)
         .then(response => resolve({isSent: true, feedbackURL: response.url}))

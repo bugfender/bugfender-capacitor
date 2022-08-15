@@ -1,9 +1,6 @@
 /// <reference types="@capacitor/cli" />
 
-import type {LogEntry} from "@bugfender/common";
-
-import type {ISDKOptions} from "./types/sdk-options";
-import type {UserFeedbackOptions} from "./user-feedback";
+import type {LogEntry, SDKOptions, UserFeedbackOptions} from "@bugfender/common";
 
 declare module '@capacitor/cli' {
   export interface PluginsConfig {
@@ -17,7 +14,7 @@ interface URLResponse {
 
 export interface BugfenderPlugin {
 
-  init(options: ISDKOptions): Promise<void>
+  init(options: SDKOptions): Promise<void>
 
   forceSendOnce(): void
 
