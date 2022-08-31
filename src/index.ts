@@ -28,4 +28,4 @@ if (Capacitor.isNativePlatform()) {
 export * from './definitions';
 export { Bugfender };
 export { LogLevel };
-export { UserFeedbackResult }
+export { UserFeedbackResult };
