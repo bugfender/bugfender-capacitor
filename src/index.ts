@@ -1,4 +1,5 @@
-import type { BugfenderFacade } from '@bugfender/common';
+import type { BugfenderFacade, UserFeedbackResult } from '@bugfender/common';
+import { LogLevel } from "@bugfender/common";
 import { Capacitor, registerPlugin } from '@capacitor/core';
 
 import { BugfenderCapacitorWrapper } from './bugfender-capacitor-wrapper';
@@ -26,3 +27,5 @@ if (Capacitor.isNativePlatform()) {
 
 export * from './definitions';
 export { Bugfender };
+export { LogLevel };
+export { UserFeedbackResult }
