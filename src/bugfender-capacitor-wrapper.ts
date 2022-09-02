@@ -19,7 +19,7 @@ import {SdkOptionsValidator} from "./sdk-options-validator";
 
 export class BugfenderCapacitorWrapper implements BugfenderFacade {
   private overrideConsoleMethods = new OverrideConsoleMethods(window);
-  private printToConsole = new PrintToConsole(global.console);
+  private printToConsole = new PrintToConsole(window.console);
   private sdkOptionsValidator: SdkOptionsValidator = new SdkOptionsValidator();
   private initialized = false;
 
