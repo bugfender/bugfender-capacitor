@@ -12,9 +12,8 @@
 ## Running this example
 
 - `nvm use`: Ensure correct Node.js version is in use
-- Each time you do some changes to the plugin (root):
-  - In the repository root:
-    - `npm build`: build `@bugfender/capacitor`
-  - In the `example` folder:
-    - Stop example server.
-    - `npm run serve`: run the example server
+- `./build.sh`: build root project, example project & sync android/ios projects
+- To run, in the `example` project:
+  - Web: `npm run serve`
+  - Android: `npx cap run android`
+  - iOS: `npx cap run ios`
