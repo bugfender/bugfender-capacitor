@@ -9,7 +9,7 @@ end
 
 target 'Plugin' do
   capacitor_pods
-  pod 'BugfenderSDK', '~> 1.10'
+  pod 'BugfenderSDK', '~> 1.10' # From 1.10 to 2.0 (excluded)
 end
 
 target 'PluginTests' do
