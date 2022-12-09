@@ -1,6 +1,7 @@
-import type {
+import {
   BugfenderFacade,
   DeviceKeyValue,
+  formatLogEntryText,
   LogEntry, SDKOptions,
   UserFeedbackOptions,
   UserFeedbackResult
@@ -150,7 +151,7 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
       file: log.file ?? '',
       level: log.level ?? LogLevel.Debug,
       tag: log.tag ?? '',
-      text: log.text ?? ''
+      text: formatLogEntryText(log.text ?? '')
     })
   }
 
