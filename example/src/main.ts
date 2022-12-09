@@ -158,3 +158,13 @@ document.getElementById("native_feedback_btn")?.addEventListener("click", functi
     }
   });
 })
+
+document.getElementById('console_compat_logtext_btn')?.addEventListener('click', () => {
+  Bugfender.sendLog({
+    text: ['This is a console.* template: %s', 'value']
+  });
+
+  Bugfender.sendLog({
+    text: ['Just handles array of mixed values', true, 42, { foo: 'bar' }]
+  });
+});
