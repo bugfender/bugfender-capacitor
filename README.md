@@ -399,14 +399,6 @@ setForceEnabled(state: boolean) => void
 | **`enableLogcatLogging`**     | <code>boolean</code> | Logs all logs written via Logcat. Defaults to `false`. **Android only**.                                                             |
 
 
-#### UserFeedbackResult
-
-| Prop              | Type                 |
-| ----------------- | -------------------- |
-| **`isSent`**      | <code>boolean</code> |
-| **`feedbackURL`** | <code>string</code>  |
-
-
 #### UserFeedbackResultSuccess
 
 | Prop              | Type                | Description                     |
@@ -440,15 +432,15 @@ Options object for `Bugfender.getUserFeedback` with customised modal strings.
 
 Log Entry object interface
 
-| Prop         | Type                                          | Description                                                        |
-| ------------ | --------------------------------------------- | ------------------------------------------------------------------ |
-| **`line`**   | <code>number</code>                           | The line number where the log was triggered from                   |
-| **`level`**  | <code><a href="#loglevel">LogLevel</a></code> | The log's level based on <a href="#loglevel">LogLevel</a> constant |
-| **`tag`**    | <code>string</code>                           | The log's tag                                                      |
-| **`method`** | <code>string</code>                           | The method name where the log was triggered from                   |
-| **`file`**   | <code>string</code>                           | The file name where the log was triggered from                     |
-| **`text`**   | <code>string</code>                           | The log's text content                                             |
-| **`url`**    | <code>string</code>                           | The log's origin URL. This attribute is ignored on Android & iOS   |
+| Prop         | Type                                          | Description                                                                                               |
+| ------------ | --------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **`line`**   | <code>number</code>                           | The line number where the log was triggered from                                                          |
+| **`level`**  | <code><a href="#loglevel">LogLevel</a></code> | The log's level based on <a href="#loglevel">LogLevel</a> constant                                        |
+| **`tag`**    | <code>string</code>                           | The log's tag                                                                                             |
+| **`method`** | <code>string</code>                           | The method name where the log was triggered from                                                          |
+| **`file`**   | <code>string</code>                           | The file name where the log was triggered from                                                            |
+| **`text`**   | <code>string \| unknown[]</code>              | Text can be either: - `string` with the content - `unknown[]` array compatible with `console.*` signature |
+| **`url`**    | <code>string</code>                           | The log's origin URL. This attribute is ignored on Android & iOS                                          |
 
 
 ### Type Aliases
