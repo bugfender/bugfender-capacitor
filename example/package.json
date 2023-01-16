@@ -24,17 +24,17 @@
   },
   "dependencies": {
     "@bugfender/capacitor": "file:..",
-    "@capacitor/android": "^4.4.0",
-    "@capacitor/camera": "^4.1.3",
-    "@capacitor/core": "^4.4.0",
-    "@capacitor/splash-screen": "^4.1.1"
+    "@capacitor/android": "^4.6.1",
+    "@capacitor/camera": "^4.1.4",
+    "@capacitor/core": "^4.6.1",
+    "@capacitor/splash-screen": "^4.1.2"
   },
   "devDependencies": {
-    "@capacitor/cli": "^4.4.0",
+    "@capacitor/cli": "^4.6.1",
     "buffer": "^6.0.3",
-    "parcel": "^2.7.0",
+    "parcel": "^2.8.2",
     "process": "^0.11.10",
-    "serve": "^14.0.1"
+    "serve": "^14.1.2"
   },
   "author": "",
   "license": "ISC"
