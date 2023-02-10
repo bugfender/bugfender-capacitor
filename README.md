@@ -5,7 +5,7 @@ Remote logging, crash reporting and in-app user feedback with [Bugfender](https:
 ## Install
 
 ```bash
-npm install @bugfender/capacitor
+npm install @bugfender/capacitor @bugfender/sdk @bugfender/common
 npx cap sync
 ```
 
