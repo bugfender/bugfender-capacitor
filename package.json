@@ -63,7 +63,8 @@
   },
   "peerDependencies": {
     "@capacitor/core": "^4.6.1",
-    "@bugfender/sdk": "^2.2.1"
+    "@bugfender/sdk": "^2.2.1",
+    "@bugfender/common": "^1.1.2"
   },
   "prettier": "@mobilejazz/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
@@ -77,8 +78,5 @@
     "android": {
       "src": "android"
     }
-  },
-  "dependencies": {
-    "@bugfender/common": "^1.1.2"
   }
 }
