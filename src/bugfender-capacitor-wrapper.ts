@@ -2,7 +2,7 @@ import {
   BugfenderFacade,
   DeviceKeyValue,
   formatLogEntryText,
-  LogEntry, SDKOptions,
+  LogEntry, RegisterBrowserEventsHandler, RegisterUIEventsHandler, SDKOptions,
   UserFeedbackOptions,
   UserFeedbackResult
 } from "@bugfender/common";
@@ -14,7 +14,7 @@ import {
   UserFeedbackOptionsValidator
 } from "@bugfender/common";
 
-import type {BugfenderPlugin} from "./definitions";
+import type {BugfenderPlugin, URLResponse} from "./definitions";
 import {OverrideConsoleMethods} from "./override-console-methods";
 import {SdkOptionsValidator} from "./sdk-options-validator";
 
@@ -38,11 +38,20 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
       if (sanitizedOptions.overrideConsoleMethods) {
         this.overrideConsoleMethods.init(this.bugfenderCapacitor);
       }
-      this.printToConsole.init(sanitizedOptions.printToConsole ?? true);
 
       if (sanitizedOptions.registerErrorHandler) {
         new RegisterErrorHandler(window).init(this);
       }
+
+      if (sanitizedOptions.logBrowserEvents) {
+        new RegisterBrowserEventsHandler(this, window).init();
+      }
+
+      if (sanitizedOptions.logUIEvents) {
+        new RegisterUIEventsHandler(this, window).init();
+      }
+
+      this.printToConsole.init(sanitizedOptions.printToConsole ?? true);
     } else {
       promise = Promise.resolve()
     }
@@ -58,17 +67,15 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
   }
 
   getDeviceURL(): Promise<string> {
-    return this.mapPromise(
-      this.bugfenderCapacitor.getDeviceURL(),
-      this.urlToString
-    )
+    return this.bugfenderCapacitor
+      .getDeviceURL()
+      .then(this.urlToString);
   }
 
   getSessionURL(): Promise<string> {
-    return this.mapPromise(
-      this.bugfenderCapacitor.getSessionURL(),
-      this.urlToString
-    )
+    return this.bugfenderCapacitor
+      .getSessionURL()
+      .then(this.urlToString);
   }
 
   getUserFeedback(options?: UserFeedbackOptions): Promise<UserFeedbackResult> {
@@ -129,18 +136,18 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
 
   sendCrash(title: string, text: string): Promise<string> {
     this.printToConsole.error(`Crash: ${title}.\n${text}`);
-    return this.mapPromise(
-      this.bugfenderCapacitor.sendCrash({title: title, text: text}),
-      this.urlToString
-    )
+
+    return this.bugfenderCapacitor
+      .sendCrash({title: title, text: text})
+      .then(this.urlToString);
   }
 
   sendIssue(title: string, text: string): Promise<string> {
     this.printToConsole.warn(`Issue: ${title}.\n${text}`);
-    return this.mapPromise(
-      this.bugfenderCapacitor.sendIssue({title: title, text: text}),
-      this.urlToString
-    )
+
+    return this.bugfenderCapacitor
+      .sendIssue({title: title, text: text})
+      .then(this.urlToString);
   }
 
   sendLog(log: LogEntry): void {
@@ -157,10 +164,10 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
 
   sendUserFeedback(title: string, text: string): Promise<string> {
     this.printToConsole.info(`User Feedback: ${title}.\n${text}`);
-    return this.mapPromise(
-      this.bugfenderCapacitor.sendUserFeedback({title: title, text: text}),
-      this.urlToString
-    )
+
+    return this.bugfenderCapacitor
+      .sendUserFeedback({title: title, text: text})
+      .then(this.urlToString);
   }
 
   setDeviceKey(key: string, value: DeviceKeyValue): void {
@@ -184,11 +191,7 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
     this.bugfenderCapacitor.setForceEnabled({state: state})
   }
 
-  private mapPromise<A, B>(promise: Promise<A>, mappingWith: (from: A) => B): Promise<B> {
-    return promise.then(response => mappingWith(response));
-  }
-
-  private urlToString(from: { url: string }): string {
+  private urlToString(from: URLResponse): string {
     return from.url;
   }
 }
