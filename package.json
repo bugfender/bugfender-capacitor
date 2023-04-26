@@ -62,9 +62,9 @@
     "typescript": "~4.9.5"
   },
   "peerDependencies": {
-    "@capacitor/core": "^4.0.0",
+    "@bugfender/common": "^1.3.0",
     "@bugfender/sdk": "^2.2.4",
-    "@bugfender/common": "^1.2.0"
+    "@capacitor/core": "^4.0.0"
   },
   "prettier": "@mobilejazz/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
