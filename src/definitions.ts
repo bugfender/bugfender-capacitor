@@ -8,7 +8,7 @@ declare module '@capacitor/cli' {
   }
 }
 
-interface URLResponse {
+export interface URLResponse {
   url: string
 }
 

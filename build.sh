@@ -8,6 +8,8 @@ cd "${0%/*}"
 npm run build
 # Go to the example directory
 cd example
+# Install packages
+npm install
 # Build the example
 npm run build
 # Sync with the platforms
