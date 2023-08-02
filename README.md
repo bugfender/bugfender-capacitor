@@ -2,12 +2,25 @@
 
 Remote logging, crash reporting and in-app user feedback with [Bugfender](https://bugfender.com) and [Capacitor](https://capacitorjs.com).
 
-## Install
+This module is a plugin for Capacitor versions 4 and 5. You can use `@bugfender/capacitor` in Ionic projects for iOS, Android, web and electron platforms.
+
+## Installation
 
 ```bash
 npm install @bugfender/capacitor @bugfender/sdk @bugfender/common
 npx cap sync
 ```
+
+## Usage
+
+Import Bugfender like this:
+
+```bash
+import { Bugfender } from '@bugfender/capacitor';
+```
+
+**Note:** in an Ionic/Capacitor project, always import `@bugfender/capacitor` instead of `@bugfender/sdk`. 
+This will enable the native features of the SDK that you wouldn't get otherwise.
 
 ## API
 
