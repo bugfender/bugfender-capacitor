@@ -1,6 +1,6 @@
 {
   "name": "@bugfender/capacitor",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Remote logging with Bugfender",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
