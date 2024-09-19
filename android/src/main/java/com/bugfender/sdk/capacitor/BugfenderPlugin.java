@@ -11,7 +11,6 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.ActivityCallback;
 import com.getcapacitor.annotation.CapacitorPlugin;
-
 import java.net.URL;
 
 @CapacitorPlugin(name = "Bugfender")
@@ -36,7 +35,8 @@ public class BugfenderPlugin extends Plugin {
     }
     // endregion before init
 
-    boolean debug = call.getBoolean("debug",
+    boolean debug = call.getBoolean(
+      "debug",
       call.getBoolean("printToConsole", false)
     );
     Bugfender.init(getContext(), call.getString("appKey"), debug);
@@ -55,7 +55,10 @@ public class BugfenderPlugin extends Plugin {
       Bugfender.enableUIEventLogging(getActivity().getApplication());
     }
 
-    boolean registerErrorHandler = call.getBoolean("registerErrorHandler", false);
+    boolean registerErrorHandler = call.getBoolean(
+      "registerErrorHandler",
+      false
+    );
     if (registerErrorHandler) {
       Bugfender.enableCrashReporting();
     }
@@ -78,7 +81,9 @@ public class BugfenderPlugin extends Plugin {
       response.put("url", url.toString());
       call.resolve(response);
     } else {
-      call.reject("Bugfender SDK is not initialized. You should call first to the method Bugfender.init()");
+      call.reject(
+        "Bugfender SDK is not initialized. You should call first to the method Bugfender.init()"
+      );
     }
   }
 
@@ -90,7 +95,9 @@ public class BugfenderPlugin extends Plugin {
       response.put("url", url.toString());
       call.resolve(response);
     } else {
-      call.reject("Bugfender SDK is not initialized. You should call first to the method Bugfender.init()");
+      call.reject(
+        "Bugfender SDK is not initialized. You should call first to the method Bugfender.init()"
+      );
     }
   }
 
@@ -103,8 +110,16 @@ public class BugfenderPlugin extends Plugin {
     String sendButtonText = call.getString("submitLabel");
     startActivityForResult(
       call,
-      Bugfender.getUserFeedbackActivityIntent(getActivity().getApplication(), title, hint, subjectHint, messageHint, sendButtonText),
-      "getUserFeedbackResult");
+      Bugfender.getUserFeedbackActivityIntent(
+        getActivity().getApplication(),
+        title,
+        hint,
+        subjectHint,
+        messageHint,
+        sendButtonText
+      ),
+      "getUserFeedbackResult"
+    );
   }
 
   @ActivityCallback
@@ -114,7 +129,10 @@ public class BugfenderPlugin extends Plugin {
     }
     if (result.getResultCode() == Activity.RESULT_OK) {
       JSObject response = new JSObject();
-      response.put("url", result.getData().getStringExtra(FeedbackActivity.RESULT_FEEDBACK_URL));
+      response.put(
+        "url",
+        result.getData().getStringExtra(FeedbackActivity.RESULT_FEEDBACK_URL)
+      );
       call.resolve(response);
     } else {
       call.reject("Feedback not sent");
@@ -165,25 +183,35 @@ public class BugfenderPlugin extends Plugin {
 
   @PluginMethod
   public void sendCrash(PluginCall call) {
-    URL url = Bugfender.sendCrash(call.getString("title"), call.getString("text"));
+    URL url = Bugfender.sendCrash(
+      call.getString("title"),
+      call.getString("text")
+    );
     if (url != null) {
       JSObject response = new JSObject();
       response.put("url", url.toString());
       call.resolve(response);
     } else {
-      call.reject("Bugfender SDK is not initialized. You should call first to the method Bugfender.init()");
+      call.reject(
+        "Bugfender SDK is not initialized. You should call first to the method Bugfender.init()"
+      );
     }
   }
 
   @PluginMethod
   public void sendIssue(PluginCall call) {
-    URL url = Bugfender.sendIssue(call.getString("title"), call.getString("text"));
+    URL url = Bugfender.sendIssue(
+      call.getString("title"),
+      call.getString("text")
+    );
     if (url != null) {
       JSObject response = new JSObject();
       response.put("url", url.toString());
       call.resolve(response);
     } else {
-      call.reject("Bugfender SDK is not initialized. You should call first to the method Bugfender.init()");
+      call.reject(
+        "Bugfender SDK is not initialized. You should call first to the method Bugfender.init()"
+      );
     }
   }
 
@@ -219,13 +247,18 @@ public class BugfenderPlugin extends Plugin {
 
   @PluginMethod
   public void sendUserFeedback(PluginCall call) {
-    URL url = Bugfender.sendUserFeedback(call.getString("title"), call.getString("text"));
+    URL url = Bugfender.sendUserFeedback(
+      call.getString("title"),
+      call.getString("text")
+    );
     if (url != null) {
       JSObject response = new JSObject();
       response.put("url", url.toString());
       call.resolve(response);
     } else {
-      call.reject("Bugfender SDK is not initialized. You should call first to the method Bugfender.init()");
+      call.reject(
+        "Bugfender SDK is not initialized. You should call first to the method Bugfender.init()"
+      );
     }
   }
 
@@ -270,5 +303,4 @@ public class BugfenderPlugin extends Plugin {
     Bugfender.setForceEnabled(call.getBoolean("state"));
     call.resolve();
   }
-
 }
