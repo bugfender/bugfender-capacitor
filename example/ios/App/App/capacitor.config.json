@@ -7,5 +7,10 @@
 		"SplashScreen": {
 			"launchShowDuration": 0
 		}
-	}
+	},
+	"packageClassList": [
+		"BugfenderPlugin",
+		"CAPCameraPlugin",
+		"SplashScreenPlugin"
+	]
 }
