@@ -52,6 +52,7 @@ Please check the following URL for a complete API reference: [https://js.bugfend
 * [`sendUserFeedback(...)`](#senduserfeedback)
 * [`setDeviceKey(...)`](#setdevicekey)
 * [`setForceEnabled(...)`](#setforceenabled)
+* [`setSDKType(...)`](#setsdktype)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 * [Enums](#enums)
@@ -385,6 +386,20 @@ setForceEnabled(state: boolean) => void
 | Param       | Type                 |
 | ----------- | -------------------- |
 | **`state`** | <code>boolean</code> |
+
+--------------------
+
+
+### setSDKType(...)
+
+```typescript
+setSDKType(sdkType: string, version: number) => void
+```
+
+| Param         | Type                |
+| ------------- | ------------------- |
+| **`sdkType`** | <code>string</code> |
+| **`version`** | <code>number</code> |
 
 --------------------
 

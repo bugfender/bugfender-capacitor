@@ -5,6 +5,7 @@ import { Capacitor, registerPlugin } from "@capacitor/core";
 
 import { BugfenderCapacitorWrapper } from "./bugfender-capacitor-wrapper";
 import type { BugfenderPlugin } from "./definitions";
+import { getVersionNumber } from "./version";
 
 // Non-native platforms (web & electron) return directly the `Bugfender` instance from `@bugfender/sdk` ("pretty" API).
 // For native we get a `BugfenderPlugin` instance with the Capacitor "ugly" API.
@@ -30,6 +31,9 @@ if (Capacitor.isNativePlatform()) {
 } else {
   Bugfender = BugfenderCapacitor as BugfenderFacade;
 }
+
+// Automatically set SDK type to "capacitor" with the current version for web platforms
+Bugfender.setSDKType("capacitor", getVersionNumber());
 
 export * from "./definitions";
 export { Bugfender };

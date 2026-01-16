@@ -20,6 +20,7 @@ import {
 import type { BugfenderPlugin, URLResponse } from "./definitions";
 import { OverrideConsoleMethods } from "./override-console-methods";
 import { SdkOptionsValidator } from "./sdk-options-validator";
+import { getVersionNumber } from "./version";
 
 export class BugfenderCapacitorWrapper implements BugfenderFacade {
   private overrideConsoleMethods = new OverrideConsoleMethods(window);
@@ -27,7 +28,10 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
   private sdkOptionsValidator: SdkOptionsValidator = new SdkOptionsValidator();
   private initialized = false;
 
-  constructor(private readonly bugfenderCapacitor: BugfenderPlugin) {}
+  constructor(private readonly bugfenderCapacitor: BugfenderPlugin) {
+    // Automatically set SDK type to "capacitor" with the current version
+    this.setSDKType("capacitor", getVersionNumber());
+  }
 
   init(options: SDKOptions): Promise<void> {
     let promise: Promise<void>;
@@ -191,6 +195,12 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
   setForceEnabled(state: boolean): void {
     this.printToConsole.info(`Set force enabled set to ${state}`);
     this.bugfenderCapacitor.setForceEnabled({ state: state });
+  }
+
+  setSDKType(sdkType: string, version: number): void {
+    this.printToConsole.info(`SDK type set to ${sdkType} version ${version}`);
+    // Note: This is primarily used for web User-Agent strings.
+    // For native platforms, the SDK type is typically determined automatically by the native SDK.
   }
 
   private urlToString(from: URLResponse): string {
