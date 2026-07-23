@@ -18,6 +18,13 @@ import {
 } from "@bugfender/common";
 
 import type { BugfenderPlugin, URLResponse } from "./definitions";
+import type {
+  NetworkHeaders,
+  NetworkLoggingRequestObfuscationHandler,
+  NetworkLoggingResponseObfuscationHandler,
+  NetworkRequestData,
+  NetworkResponseData,
+} from "./network-logging.types";
 import { OverrideConsoleMethods } from "./override-console-methods";
 import { SdkOptionsValidator } from "./sdk-options-validator";
 import { getVersionNumber } from "./version";
@@ -27,6 +34,11 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
   private printToConsole = new PrintToConsole(window.console);
   private sdkOptionsValidator: SdkOptionsValidator = new SdkOptionsValidator();
   private initialized = false;
+  private requestObfuscationHandler: NetworkLoggingRequestObfuscationHandler | null =
+    null;
+  private responseObfuscationHandler: NetworkLoggingResponseObfuscationHandler | null =
+    null;
+  private obfuscationListenerInstalled = false;
 
   constructor(private readonly bugfenderCapacitor: BugfenderPlugin) {
     // Automatically set SDK type to "capacitor" with the current version
@@ -39,7 +51,17 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
     if (!this.initialized) {
       const sanitizedOptions = this.sdkOptionsValidator.init(options);
 
-      promise = this.bugfenderCapacitor.init(sanitizedOptions);
+      promise = this.bugfenderCapacitor.init(sanitizedOptions).then(() => {
+        if (sanitizedOptions.networkLoggingEnabled) {
+          this.setNetworkLoggingEnabled(true);
+        }
+        if (sanitizedOptions.networkLoggingCaptureBodies) {
+          this.setNetworkLoggingCaptureBodies(true);
+        }
+        if (sanitizedOptions.networkLoggingCaptureErrorResponseBodies) {
+          this.setNetworkLoggingCaptureErrorResponseBodies(true);
+        }
+      });
 
       if (sanitizedOptions.overrideConsoleMethods) {
         this.overrideConsoleMethods.init(this.bugfenderCapacitor);
@@ -201,6 +223,141 @@ export class BugfenderCapacitorWrapper implements BugfenderFacade {
     this.printToConsole.info(`SDK type set to ${sdkType} version ${version}`);
     // Note: This is primarily used for web User-Agent strings.
     // For native platforms, the SDK type is typically determined automatically by the native SDK.
+  }
+
+  setNetworkLoggingEnabled(enabled: boolean): void {
+    this.printToConsole.info(`Set network logging enabled: ${enabled}`);
+    void this.bugfenderCapacitor.setNetworkLoggingEnabled({ enabled });
+  }
+
+  setNetworkLoggingCaptureBodies(capture: boolean): void {
+    this.printToConsole.info(`Set network logging capture bodies: ${capture}`);
+    void this.bugfenderCapacitor.setNetworkLoggingCaptureBodies({ capture });
+  }
+
+  setNetworkLoggingCaptureErrorResponseBodies(capture: boolean): void {
+    this.printToConsole.info(
+      `Set network logging capture error response bodies: ${capture}`,
+    );
+    void this.bugfenderCapacitor.setNetworkLoggingCaptureErrorResponseBodies({
+      capture,
+    });
+  }
+
+  setNetworkLoggingURLFilter(
+    allowlist: string[] | null,
+    denylist: string[] | null,
+  ): void {
+    this.printToConsole.info("Set network logging URL filter");
+    void this.bugfenderCapacitor.setNetworkLoggingURLFilter({
+      allowlist,
+      denylist,
+    });
+  }
+
+  setNetworkLoggingMaxRequestsPerMinute(count: number | null): void {
+    this.printToConsole.info(
+      `Set network logging max requests per minute: ${count}`,
+    );
+    void this.bugfenderCapacitor.setNetworkLoggingMaxRequestsPerMinute({
+      count,
+    });
+  }
+
+  setNetworkLoggingRequestObfuscationHandler(
+    handler: NetworkLoggingRequestObfuscationHandler | null,
+  ): void {
+    this.printToConsole.info("Set network logging request obfuscation handler");
+    this.requestObfuscationHandler = handler;
+    if (handler) {
+      this.ensureObfuscationListener();
+    }
+    void this.bugfenderCapacitor.setNetworkLoggingRequestObfuscationHandlerEnabled(
+      { enabled: handler != null },
+    );
+  }
+
+  setNetworkLoggingResponseObfuscationHandler(
+    handler: NetworkLoggingResponseObfuscationHandler | null,
+  ): void {
+    this.printToConsole.info(
+      "Set network logging response obfuscation handler",
+    );
+    this.responseObfuscationHandler = handler;
+    if (handler) {
+      this.ensureObfuscationListener();
+    }
+    void this.bugfenderCapacitor.setNetworkLoggingResponseObfuscationHandlerEnabled(
+      { enabled: handler != null },
+    );
+  }
+
+  private ensureObfuscationListener(): void {
+    if (this.obfuscationListenerInstalled) {
+      return;
+    }
+    this.obfuscationListenerInstalled = true;
+
+    void this.bugfenderCapacitor.addListener(
+      "BugfenderObfuscateNetworkRequest",
+      (event) => {
+        this.handleObfuscateRequest(event);
+      },
+    );
+    void this.bugfenderCapacitor.addListener(
+      "BugfenderObfuscateNetworkResponse",
+      (event) => {
+        this.handleObfuscateResponse(event);
+      },
+    );
+  }
+
+  private handleObfuscateRequest(event: {
+    requestId: string;
+    url?: string;
+    headers?: NetworkHeaders;
+    body?: string | null;
+  }): void {
+    const url = event.url ?? "";
+    const headers = event.headers ?? {};
+    const body = event.body ?? null;
+    let result: NetworkRequestData = { url, headers, body };
+
+    try {
+      if (this.requestObfuscationHandler) {
+        result = this.requestObfuscationHandler(url, { ...headers }, body);
+      }
+    } catch {
+      result = { url, headers: {}, body: null };
+    }
+
+    void this.bugfenderCapacitor.completeNetworkObfuscation({
+      requestId: event.requestId,
+      result,
+    });
+  }
+
+  private handleObfuscateResponse(event: {
+    requestId: string;
+    headers?: NetworkHeaders;
+    body?: string | null;
+  }): void {
+    const headers = event.headers ?? {};
+    const body = event.body ?? null;
+    let result: NetworkResponseData = { headers, body };
+
+    try {
+      if (this.responseObfuscationHandler) {
+        result = this.responseObfuscationHandler({ ...headers }, body);
+      }
+    } catch {
+      result = { headers: {}, body: null };
+    }
+
+    void this.bugfenderCapacitor.completeNetworkObfuscation({
+      requestId: event.requestId,
+      result,
+    });
   }
 
   private urlToString(from: URLResponse): string {

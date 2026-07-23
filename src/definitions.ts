@@ -5,6 +5,13 @@ import type {
   SDKOptions,
   UserFeedbackOptions,
 } from "@bugfender/common";
+import type { PluginListenerHandle } from "@capacitor/core";
+
+import type {
+  NetworkHeaders,
+  NetworkRequestData,
+  NetworkResponseData,
+} from "./network-logging.types";
 
 declare module "@capacitor/cli" {
   export interface PluginsConfig {
@@ -14,6 +21,19 @@ declare module "@capacitor/cli" {
 
 export interface URLResponse {
   url: string;
+}
+
+export interface ObfuscateNetworkRequestEvent {
+  requestId: string;
+  url: string;
+  headers: NetworkHeaders;
+  body: string | null;
+}
+
+export interface ObfuscateNetworkResponseEvent {
+  requestId: string;
+  headers: NetworkHeaders;
+  body: string | null;
 }
 
 export interface BugfenderPlugin {
@@ -58,4 +78,44 @@ export interface BugfenderPlugin {
   setDeviceFloat(data: { key: string; value: number }): void;
 
   setForceEnabled(data: { state: boolean }): void;
+
+  setNetworkLoggingEnabled(data: { enabled: boolean }): Promise<void>;
+
+  setNetworkLoggingCaptureBodies(data: { capture: boolean }): Promise<void>;
+
+  setNetworkLoggingCaptureErrorResponseBodies(data: {
+    capture: boolean;
+  }): Promise<void>;
+
+  setNetworkLoggingURLFilter(data: {
+    allowlist: string[] | null;
+    denylist: string[] | null;
+  }): Promise<void>;
+
+  setNetworkLoggingMaxRequestsPerMinute(data: {
+    count: number | null;
+  }): Promise<void>;
+
+  setNetworkLoggingRequestObfuscationHandlerEnabled(data: {
+    enabled: boolean;
+  }): Promise<void>;
+
+  setNetworkLoggingResponseObfuscationHandlerEnabled(data: {
+    enabled: boolean;
+  }): Promise<void>;
+
+  completeNetworkObfuscation(data: {
+    requestId: string;
+    result: NetworkRequestData | NetworkResponseData;
+  }): Promise<void>;
+
+  addListener(
+    eventName: "BugfenderObfuscateNetworkRequest",
+    listenerFunc: (event: ObfuscateNetworkRequestEvent) => void,
+  ): Promise<PluginListenerHandle>;
+
+  addListener(
+    eventName: "BugfenderObfuscateNetworkResponse",
+    listenerFunc: (event: ObfuscateNetworkResponseEvent) => void,
+  ): Promise<PluginListenerHandle>;
 }

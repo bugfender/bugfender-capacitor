@@ -7,6 +7,8 @@ export default {
       name: 'capacitorBugfender',
       globals: {
         '@capacitor/core': 'capacitorExports',
+        '@bugfender/sdk': 'Bugfender',
+        '@bugfender/common': 'BugfenderCommon',
       },
       sourcemap: true,
       inlineDynamicImports: true,
@@ -16,6 +18,10 @@ export default {
       format: 'cjs',
       sourcemap: true,
       inlineDynamicImports: true,
+      globals: {
+        '@bugfender/sdk': 'Bugfender',
+        '@bugfender/common': 'BugfenderCommon',
+      },
     },
   ],
   external: [
@@ -23,9 +29,4 @@ export default {
     '@bugfender/sdk',
     '@bugfender/common',
   ],
-  output: {
-    globals: {
-      '@bugfender/sdk': 'Bugfender',
-    },
-  },
 };

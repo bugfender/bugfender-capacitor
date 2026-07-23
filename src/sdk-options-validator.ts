@@ -12,6 +12,9 @@ export class SdkOptionsValidator {
     logUIEvents: ["boolean"],
     registerErrorHandler: ["boolean"],
     version: ["string"],
+    networkLoggingEnabled: ["boolean"],
+    networkLoggingCaptureBodies: ["boolean"],
+    networkLoggingCaptureErrorResponseBodies: ["boolean"],
   };
 
   public init(options: SDKOptions): SDKOptions {
@@ -29,6 +32,9 @@ export class SdkOptionsValidator {
       registerErrorHandler: true,
       enableLogcatLogging: false,
       maximumLocalStorageSize: 5 * 1024 * 1024,
+      networkLoggingEnabled: false,
+      networkLoggingCaptureBodies: false,
+      networkLoggingCaptureErrorResponseBodies: false,
       ...options,
     };
   }

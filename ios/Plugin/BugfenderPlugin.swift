@@ -7,7 +7,10 @@ import BugfenderSDK
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(BugfenderPlugin)
+// swiftlint:disable:next type_body_length
 public class BugfenderPlugin: CAPPlugin {
+    private var pendingObfuscations: [String: PendingObfuscation] = [:]
+    private let pendingObfuscationsQueue = DispatchQueue(label: "com.bugfender.capacitor.obfuscation")
 
     @objc func `init`(_ call: CAPPluginCall) {
         // MARK: before init
@@ -39,6 +42,16 @@ public class BugfenderPlugin: CAPPlugin {
         let registerErrorHandler = call.getBool("registerErrorHandler", false)
         if registerErrorHandler {
             Bugfender.enableCrashReporting()
+        }
+
+        if call.getBool("networkLoggingEnabled", false) {
+            Bugfender.setNetworkLoggingEnabled(true)
+        }
+        if call.getBool("networkLoggingCaptureBodies", false) {
+            Bugfender.setNetworkLoggingCaptureBodies(true)
+        }
+        if call.getBool("networkLoggingCaptureErrorResponseBodies", false) {
+            Bugfender.setNetworkLoggingCaptureErrorResponseBodies(true)
         }
 
         call.resolve()
@@ -215,4 +228,170 @@ public class BugfenderPlugin: CAPPlugin {
         Bugfender.setForceEnabled(call.getBool("state")!)
         call.resolve()
     }
+
+    @objc func setNetworkLoggingEnabled(_ call: CAPPluginCall) {
+        Bugfender.setNetworkLoggingEnabled(call.getBool("enabled", false))
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingCaptureBodies(_ call: CAPPluginCall) {
+        Bugfender.setNetworkLoggingCaptureBodies(call.getBool("capture", false))
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingCaptureErrorResponseBodies(_ call: CAPPluginCall) {
+        Bugfender.setNetworkLoggingCaptureErrorResponseBodies(call.getBool("capture", false))
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingURLFilter(_ call: CAPPluginCall) {
+        let allowlist = call.getArray("allowlist", String.self)
+        let denylist = call.getArray("denylist", String.self)
+        Bugfender.setNetworkLoggingURLFilter(allowlist: allowlist, denylist: denylist)
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingMaxRequestsPerMinute(_ call: CAPPluginCall) {
+        if call.getValue("count") == nil || call.getValue("count") is NSNull {
+            Bugfender.setNetworkLoggingMaxRequestsPerMinute(nil)
+        } else if let count = call.getInt("count") {
+            Bugfender.setNetworkLoggingMaxRequestsPerMinute(count)
+        } else {
+            Bugfender.setNetworkLoggingMaxRequestsPerMinute(nil)
+        }
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingRequestObfuscationHandlerEnabled(_ call: CAPPluginCall) {
+        if call.getBool("enabled", false) {
+            installRequestObfuscationHandler()
+        } else {
+            Bugfender.setNetworkLoggingRequestObfuscationHandler(nil)
+        }
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingResponseObfuscationHandlerEnabled(_ call: CAPPluginCall) {
+        if call.getBool("enabled", false) {
+            installResponseObfuscationHandler()
+        } else {
+            Bugfender.setNetworkLoggingResponseObfuscationHandler(nil)
+        }
+        call.resolve()
+    }
+
+    @objc func completeNetworkObfuscation(_ call: CAPPluginCall) {
+        guard let requestId = call.getString("requestId"), !requestId.isEmpty else {
+            call.resolve()
+            return
+        }
+
+        var pending: PendingObfuscation?
+        pendingObfuscationsQueue.sync {
+            pending = pendingObfuscations[requestId]
+        }
+        if let pending = pending {
+            pending.response = call.getObject("result")
+            pending.semaphore.signal()
+        }
+        call.resolve()
+    }
+
+    private func installRequestObfuscationHandler() {
+        Bugfender.setNetworkLoggingRequestObfuscationHandler { [weak self] url, headers, body in
+            guard let self = self else {
+                return (url: url, headers: headers, body: body)
+            }
+
+            let response = self.invokeJSObfuscation(
+                eventName: "BugfenderObfuscateNetworkRequest",
+                data: [
+                    "url": url,
+                    "headers": headers,
+                    "body": body as Any
+                ]
+            )
+            guard let response = response else {
+                return (url: url, headers: headers, body: body)
+            }
+
+            let obfuscatedUrl = response["url"] as? String ?? url
+            let obfuscatedHeaders = self.stringMap(from: response["headers"])
+            let obfuscatedBody = response["body"] as? String
+            return (url: obfuscatedUrl, headers: obfuscatedHeaders, body: obfuscatedBody)
+        }
+    }
+
+    private func installResponseObfuscationHandler() {
+        Bugfender.setNetworkLoggingResponseObfuscationHandler { [weak self] headers, body in
+            guard let self = self else {
+                return (headers: headers, body: body)
+            }
+
+            let response = self.invokeJSObfuscation(
+                eventName: "BugfenderObfuscateNetworkResponse",
+                data: [
+                    "headers": headers,
+                    "body": body as Any
+                ]
+            )
+            guard let response = response else {
+                return (headers: headers, body: body)
+            }
+
+            let obfuscatedHeaders = self.stringMap(from: response["headers"])
+            let obfuscatedBody = response["body"] as? String
+            return (headers: obfuscatedHeaders, body: obfuscatedBody)
+        }
+    }
+
+    private func invokeJSObfuscation(eventName: String, data: [String: Any]) -> [String: Any]? {
+        // Avoid deadlocking the platform/UI thread while waiting for JS.
+        if Thread.isMainThread {
+            return nil
+        }
+
+        let requestId = UUID().uuidString
+        let pending = PendingObfuscation()
+        pendingObfuscationsQueue.sync {
+            pendingObfuscations[requestId] = pending
+        }
+
+        var payload = data
+        payload["requestId"] = requestId
+
+        DispatchQueue.main.async { [weak self] in
+            self?.notifyListeners(eventName, data: payload)
+        }
+
+        let waitResult = pending.semaphore.wait(timeout: .now() + 3.0)
+        pendingObfuscationsQueue.sync {
+            pendingObfuscations.removeValue(forKey: requestId)
+        }
+
+        if waitResult == .timedOut {
+            return nil
+        }
+        return pending.response
+    }
+
+    private func stringMap(from value: Any?) -> [String: String] {
+        guard let raw = value as? [AnyHashable: Any] else {
+            return [:]
+        }
+        var mapped: [String: String] = [:]
+        for (key, entry) in raw {
+            if entry is NSNull {
+                mapped[String(describing: key)] = ""
+            } else {
+                mapped[String(describing: key)] = String(describing: entry)
+            }
+        }
+        return mapped
+    }
+}
+
+private final class PendingObfuscation {
+    let semaphore = DispatchSemaphore(value: 0)
+    var response: [String: Any]?
 }
