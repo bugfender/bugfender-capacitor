@@ -45,7 +45,7 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@bugfender/sdk": "^4.0.0",
+    "@bugfender/sdk": "^4.0.1",
     "@capacitor/android": "^8.0.0",
     "@capacitor/cli": "^8.0.0",
     "@capacitor/docgen": "^0.2.1",
@@ -64,7 +64,7 @@
   },
   "peerDependencies": {
     "@bugfender/common": "^2.0.0",
-    "@bugfender/sdk": "^4.0.0",
+    "@bugfender/sdk": "^4.0.1",
     "@capacitor/core": "^8.0.0"
   },
   "prettier": "@mobilejazz/prettier-config",
