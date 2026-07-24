@@ -26,14 +26,14 @@
     "@bugfender/capacitor": "file:..",
     "@bugfender/common": "^2.0.0",
     "@bugfender/sdk": "^4.0.1",
-    "@capacitor/android": "^8.0.0",
-    "@capacitor/camera": "^8.0.0",
-    "@capacitor/core": "^8.0.0",
-    "@capacitor/ios": "^8.0.0",
-    "@capacitor/splash-screen": "^8.0.0"
+    "@capacitor/android": "^8.4.2",
+    "@capacitor/camera": "^8.2.1",
+    "@capacitor/core": "^8.4.2",
+    "@capacitor/ios": "^8.4.2",
+    "@capacitor/splash-screen": "^8.0.2"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.0.0",
+    "@capacitor/cli": "^8.4.2",
     "buffer": "^6.0.3",
     "parcel": "^2.8.2",
     "process": "^0.11.10",
