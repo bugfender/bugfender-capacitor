@@ -6,6 +6,7 @@ import android.os.Looper;
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.Nullable;
 import com.bugfender.sdk.Bugfender;
+import com.bugfender.sdk.BugfenderOkHttpInterceptor;
 import com.bugfender.sdk.LogLevel;
 import com.bugfender.sdk.ui.FeedbackActivity;
 import com.getcapacitor.JSArray;
@@ -27,8 +28,15 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,6 +55,7 @@ public class BugfenderPlugin extends Plugin {
   }
 
   private final ConcurrentHashMap<String, PendingObfuscation> pendingObfuscations = new ConcurrentHashMap<>();
+  private final ExecutorService backgroundExecutor = Executors.newCachedThreadPool();
 
   @PluginMethod
   public void init(PluginCall call) {
@@ -434,6 +443,124 @@ public class BugfenderPlugin extends Plugin {
       pending.latch.countDown();
     }
     call.resolve();
+  }
+
+  /**
+   * Example / verification helper: perform an HTTP request through OkHttp with
+   * Bugfender's interceptor so traffic appears as {@code bf_network} logs.
+   * CapacitorHttp uses HttpURLConnection and is not observed by the OkHttp adapter.
+   */
+  @PluginMethod
+  public void sendInstrumentedNetworkRequest(PluginCall call) {
+    String requestUrl = call.getString("url", "https://example.com/");
+    String httpMethod = call.getString("method", "GET");
+    if (httpMethod == null || httpMethod.isEmpty()) {
+      httpMethod = "GET";
+    }
+    final String method = httpMethod.toUpperCase();
+    final String body = call.getString("body");
+    final Map<String, String> extraHeaders = headersFromJSObject(
+      call.getObject("headers")
+    );
+
+    backgroundExecutor.execute(() -> {
+      try {
+        boolean shouldCapture = false;
+        try {
+          Method captureMethod = Bugfender.class.getDeclaredMethod(
+            "shouldCaptureNetworkRequestInternal",
+            String.class
+          );
+          captureMethod.setAccessible(true);
+          Object value = captureMethod.invoke(null, requestUrl);
+          shouldCapture = value instanceof Boolean && (Boolean) value;
+        } catch (Exception ignored) {
+          // Optional internal API.
+        }
+
+        android.util.Log.i(
+          "BF/CapacitorNet",
+          "shouldCapture=" +
+          shouldCapture +
+          " method=" +
+          method +
+          " url=" +
+          requestUrl
+        );
+
+        OkHttpClient client = new OkHttpClient.Builder()
+          .connectTimeout(15, TimeUnit.SECONDS)
+          .readTimeout(15, TimeUnit.SECONDS)
+          .writeTimeout(15, TimeUnit.SECONDS)
+          .addInterceptor(new BugfenderOkHttpInterceptor())
+          .eventListenerFactory(
+            new com.bugfender.sdk.BugfenderOkHttpEventListenerFactory()
+          )
+          .build();
+
+        Request.Builder requestBuilder = new Request.Builder().url(requestUrl);
+        if (
+          !extraHeaders.containsKey("Authorization") &&
+          !extraHeaders.containsKey("authorization")
+        ) {
+          requestBuilder.header("Authorization", "secret-token");
+        }
+        for (Map.Entry<String, String> header : extraHeaders.entrySet()) {
+          requestBuilder.header(header.getKey(), header.getValue());
+        }
+        if (
+          "POST".equals(method) ||
+          "PUT".equals(method) ||
+          "PATCH".equals(method)
+        ) {
+          RequestBody requestBody = RequestBody.create(
+            body != null ? body : "{}",
+            MediaType.parse("application/json; charset=utf-8")
+          );
+          requestBuilder.method(method, requestBody);
+        } else {
+          requestBuilder.method(method, null);
+        }
+
+        try (Response response = client.newCall(requestBuilder.build()).execute()) {
+          final int code = response.code();
+          String reqId = response.request().header("X-Bugfender-Request-ID");
+          android.util.Log.i(
+            "BF/CapacitorNet",
+            "okhttp status=" + code + " reqId=" + reqId
+          );
+          Bugfender.d(
+            "bf_capacitor_debug",
+            "okhttp status=" +
+            code +
+            " shouldCapture=" +
+            shouldCapture +
+            " url=" +
+            requestUrl +
+            " reqId=" +
+            reqId
+          );
+          Bugfender.forceSendOnce();
+
+          JSObject payload = new JSObject();
+          payload.put("status", code);
+          payload.put("shouldCapture", shouldCapture);
+          payload.put("requestId", reqId);
+          call.resolve(payload);
+        }
+      } catch (Exception e) {
+        android.util.Log.e("BF/CapacitorNet", "okhttp failed", e);
+        try {
+          Bugfender.forceSendOnce();
+        } catch (Exception ignored) {
+          // ignore
+        }
+        call.reject(
+          e.getMessage() != null ? e.getMessage() : "network_error",
+          e
+        );
+      }
+    });
   }
 
   /**

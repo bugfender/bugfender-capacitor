@@ -24,7 +24,8 @@
   },
   "dependencies": {
     "@bugfender/capacitor": "file:..",
-    "@bugfender/common": "^1.5.0",
+    "@bugfender/common": "^2.0.0",
+    "@bugfender/sdk": "^4.0.1",
     "@capacitor/android": "^8.0.0",
     "@capacitor/camera": "^8.0.0",
     "@capacitor/core": "^8.0.0",

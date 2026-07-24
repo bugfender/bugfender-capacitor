@@ -33,4 +33,5 @@ CAP_PLUGIN(BugfenderPlugin, "Bugfender",
            CAP_PLUGIN_METHOD(setNetworkLoggingRequestObfuscationHandlerEnabled, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setNetworkLoggingResponseObfuscationHandlerEnabled, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(completeNetworkObfuscation, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(sendInstrumentedNetworkRequest, CAPPluginReturnPromise);
 )

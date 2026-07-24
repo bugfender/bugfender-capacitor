@@ -1,3 +1,8 @@
 {
-  "appKey": ""
+  "appKey": "<YOUR_BUGFENDER_APP_KEY>",
+  "useLocalBugfender": false,
+  "localHost": "192.168.70.107",
+  "androidEmulatorHost": "10.0.2.2",
+  "localApiPort": 3100,
+  "localBasePort": 3000
 }

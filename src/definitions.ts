@@ -109,6 +109,22 @@ export interface BugfenderPlugin {
     result: NetworkRequestData | NetworkResponseData;
   }): Promise<void>;
 
+  /**
+   * Example / verification helper: native HTTP via OkHttp (Android) or
+   * URLSession (iOS) so Bugfender network logging can observe the traffic.
+   * CapacitorHttp uses HttpURLConnection on Android and is not captured.
+   */
+  sendInstrumentedNetworkRequest(options: {
+    url: string;
+    method?: string;
+    headers?: NetworkHeaders;
+    body?: string | null;
+  }): Promise<{
+    status: number;
+    shouldCapture: boolean;
+    requestId?: string | null;
+  }>;
+
   addListener(
     eventName: "BugfenderObfuscateNetworkRequest",
     listenerFunc: (event: ObfuscateNetworkRequestEvent) => void,

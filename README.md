@@ -54,7 +54,7 @@ You can also enable it at init time with `networkLoggingEnabled`, `networkLoggin
 Platform notes:
 
 - **iOS:** URLSession traffic is captured (including Capacitor HTTP when it uses URLSession). Requires Bugfender iOS SDK **3.0.1+**.
-- **Android:** OkHttp traffic is captured via the `android-okhttp` adapter. Requires Bugfender Android SDK **4.x**.
+- **Android:** OkHttp traffic is captured via the `android-okhttp` adapter. Requires Bugfender Android SDK **4.x**. Note: Capacitor's built-in `CapacitorHttp` uses `HttpURLConnection` on Android and is **not** observed; apps should use OkHttp (or the example's `sendInstrumentedNetworkRequest` helper) for network logs.
 - **Web / Electron:** Uses `@bugfender/sdk` (≥ 4.0.0), which intercepts `fetch` and `XMLHttpRequest`.
 
 ## API

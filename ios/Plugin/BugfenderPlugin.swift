@@ -297,6 +297,65 @@ public class BugfenderPlugin: CAPPlugin {
         call.resolve()
     }
 
+    /// Example / verification helper: URLSession request so traffic appears as `bf_network`.
+    @objc func sendInstrumentedNetworkRequest(_ call: CAPPluginCall) {
+        let urlString = call.getString("url") ?? "https://example.com/"
+        let httpMethod = (call.getString("method") ?? "GET").uppercased()
+        let body = call.getString("body")
+        let extraHeaders = call.getObject("headers") ?? [:]
+
+        guard let url = URL(string: urlString) else {
+            call.reject("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = httpMethod
+        request.timeoutInterval = 15.0
+
+        var hasAuthorization = false
+        for (key, value) in extraHeaders {
+            if let stringValue = value as? String {
+                request.setValue(stringValue, forHTTPHeaderField: key)
+                if key.compare("Authorization", options: .caseInsensitive) == .orderedSame {
+                    hasAuthorization = true
+                }
+            }
+        }
+        if !hasAuthorization {
+            request.setValue("secret-token", forHTTPHeaderField: "Authorization")
+        }
+
+        if let body = body,
+           !body.isEmpty,
+           httpMethod == "POST" || httpMethod == "PUT" || httpMethod == "PATCH" {
+            request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            request.httpBody = body.data(using: .utf8)
+        }
+
+        let task = URLSession.shared.dataTask(with: request) { _, response, error in
+            if let error = error {
+                call.reject(error.localizedDescription)
+                return
+            }
+            let status: Int
+            if let httpResponse = response as? HTTPURLResponse {
+                status = httpResponse.statusCode
+            } else {
+                status = 0
+            }
+            DispatchQueue.main.async {
+                Bugfender.forceSendOnce()
+                call.resolve([
+                    "status": status,
+                    "shouldCapture": true,
+                    "requestId": NSNull()
+                ])
+            }
+        }
+        task.resume()
+    }
+
     private func installRequestObfuscationHandler() {
         Bugfender.setNetworkLoggingRequestObfuscationHandler { [weak self] url, headers, body in
             guard let self = self else {
