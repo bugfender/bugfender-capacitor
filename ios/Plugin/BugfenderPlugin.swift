@@ -8,7 +8,42 @@ import BugfenderSDK
  */
 @objc(BugfenderPlugin)
 // swiftlint:disable:next type_body_length
-public class BugfenderPlugin: CAPPlugin {
+public class BugfenderPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "BugfenderPlugin"
+    public let jsName = "Bugfender"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "init", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "forceSendOnce", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getDeviceURL", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getSessionURL", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getUserFeedback", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "log", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "warn", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "error", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "trace", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "info", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "fatal", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "removeDeviceKey", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendCrash", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendIssue", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendLog", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendUserFeedback", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setDeviceBoolean", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setDeviceString", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setDeviceInteger", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setDeviceFloat", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setForceEnabled", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingEnabled", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingCaptureBodies", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingCaptureErrorResponseBodies", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingURLFilter", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingMaxRequestsPerMinute", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingRequestObfuscationHandlerEnabled", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingResponseObfuscationHandlerEnabled", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "completeNetworkObfuscation", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendInstrumentedNetworkRequest", returnType: CAPPluginReturnPromise)
+    ]
+
     private var pendingObfuscations: [String: PendingObfuscation] = [:]
     private let pendingObfuscationsQueue = DispatchQueue(label: "com.bugfender.capacitor.obfuscation")
 

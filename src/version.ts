@@ -8,7 +8,7 @@
  * Build-time version number in YYYYMMDD format for use with setSDKType.
  * This represents the date when the package was built/released.
  */
-export const BUILD_VERSION = 20260724;
+export const BUILD_VERSION = 20260725;
 
 /**
  * Returns the build-time version number.
