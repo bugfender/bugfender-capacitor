@@ -5,14 +5,14 @@
  * This script should be run before TypeScript compilation.
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 // Generate YYYYMMDD format from current date
 const today = new Date();
 const year = today.getFullYear();
-const month = String(today.getMonth() + 1).padStart(2, '0');
-const day = String(today.getDate()).padStart(2, '0');
+const month = String(today.getMonth() + 1).padStart(2, "0");
+const day = String(today.getDate()).padStart(2, "0");
 const versionNumber = parseInt(`${year}${month}${day}`, 10);
 
 const versionTsContent = `/**
@@ -38,7 +38,7 @@ export function getVersionNumber(): number {
 }
 `;
 
-const versionTsPath = path.join(__dirname, '../src/version.ts');
-fs.writeFileSync(versionTsPath, versionTsContent, 'utf8');
+const versionTsPath = path.join(__dirname, "../src/version.ts");
+fs.writeFileSync(versionTsPath, versionTsContent, "utf8");
 
 console.log(`Generated version.ts with build version: ${versionNumber}`);

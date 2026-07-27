@@ -37,8 +37,8 @@ android {
     abortOnError false
   }
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
+    sourceCompatibility JavaVersion.VERSION_21
+    targetCompatibility JavaVersion.VERSION_21
   }
 }
 
@@ -51,7 +51,9 @@ repositories {
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
   implementation project(':capacitor-android')
-  implementation 'com.bugfender.sdk:android:3.+'
+  implementation 'com.bugfender.sdk:android:4.+'
+  implementation 'com.bugfender.sdk:android-okhttp:4.+'
+  implementation 'com.squareup.okhttp3:okhttp:4.12.0'
   implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
   testImplementation "junit:junit:$junitVersion"
   androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"

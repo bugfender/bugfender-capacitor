@@ -8,12 +8,12 @@
  * Build-time version number in YYYYMMDD format for use with setSDKType.
  * This represents the date when the package was built/released.
  */
-export const BUILD_VERSION = 20260116;
+export const BUILD_VERSION = 20260725;
 
 /**
  * Returns the build-time version number.
  * This format is consistent with how other Bugfender SDKs handle version numbers.
- * 
+ *
  * @returns A number representing the build date in YYYYMMDD format (e.g., 20260116)
  */
 export function getVersionNumber(): number {

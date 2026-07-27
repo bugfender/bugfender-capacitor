@@ -36,6 +36,13 @@ if (Capacitor.isNativePlatform()) {
 Bugfender.setSDKType("capacitor", getVersionNumber());
 
 export * from "./definitions";
+export type {
+  NetworkHeaders,
+  NetworkRequestData,
+  NetworkResponseData,
+  NetworkLoggingRequestObfuscationHandler,
+  NetworkLoggingResponseObfuscationHandler,
+} from "./network-logging.types";
 export { Bugfender };
 export { LogLevel };
 export { UserFeedbackResult };

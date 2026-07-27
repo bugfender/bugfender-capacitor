@@ -25,4 +25,13 @@ CAP_PLUGIN(BugfenderPlugin, "Bugfender",
            CAP_PLUGIN_METHOD(setDeviceInteger, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setDeviceFloat, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(setForceEnabled, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setNetworkLoggingEnabled, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setNetworkLoggingCaptureBodies, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setNetworkLoggingCaptureErrorResponseBodies, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setNetworkLoggingURLFilter, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setNetworkLoggingMaxRequestsPerMinute, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setNetworkLoggingRequestObfuscationHandlerEnabled, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(setNetworkLoggingResponseObfuscationHandlerEnabled, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(completeNetworkObfuscation, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(sendInstrumentedNetworkRequest, CAPPluginReturnPromise);
 )

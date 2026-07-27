@@ -7,13 +7,24 @@ This guide provides instructions for contributing to this Capacitor plugin.
 ### Local Setup
 
 1. Fork and clone the repo.
-1. Install the dependencies.
+2. Install the dependencies.
 
     ```shell
     npm ci
     ```
 
-1. Install SwiftLint if you're on macOS.
+3. For Android verification, install the Android SDK and Java 21+, then either export
+   `ANDROID_HOME` / create `android/local.properties` with `sdk.dir=...`, and ensure
+   Java 21 is available (Capacitor 8 requires it):
+
+    ```shell
+    brew install openjdk@21
+    export JAVA_HOME="$(brew --prefix openjdk@21)"
+    export ANDROID_HOME="$HOME/Library/Android/sdk"
+    echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+    ```
+
+4. Install SwiftLint if you're on macOS.
 
     ```shell
     brew install swiftlint
@@ -34,6 +45,13 @@ Then, Rollup will bundle the code into a single file at `dist/plugin.js`. This f
 Build and validate the web and native projects.
 
 This is useful to run in CI to verify that the plugin builds for all platforms.
+
+For Android, run it with Java 21+ (Capacitor 8), e.g.:
+
+```shell
+export JAVA_HOME="$(brew --prefix openjdk@21)"
+npm run verify
+```
 
 #### `npm run lint` / `npm run fmt`
 

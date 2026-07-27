@@ -7,7 +7,45 @@ import BugfenderSDK
  * here: https://capacitorjs.com/docs/plugins/ios
  */
 @objc(BugfenderPlugin)
-public class BugfenderPlugin: CAPPlugin {
+// swiftlint:disable:next type_body_length
+public class BugfenderPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "BugfenderPlugin"
+    public let jsName = "Bugfender"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "init", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "forceSendOnce", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getDeviceURL", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getSessionURL", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "getUserFeedback", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "log", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "warn", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "error", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "trace", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "info", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "fatal", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "removeDeviceKey", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendCrash", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendIssue", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendLog", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendUserFeedback", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setDeviceBoolean", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setDeviceString", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setDeviceInteger", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setDeviceFloat", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setForceEnabled", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingEnabled", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingCaptureBodies", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingCaptureErrorResponseBodies", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingURLFilter", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingMaxRequestsPerMinute", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingRequestObfuscationHandlerEnabled", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "setNetworkLoggingResponseObfuscationHandlerEnabled", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "completeNetworkObfuscation", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "sendInstrumentedNetworkRequest", returnType: CAPPluginReturnPromise)
+    ]
+
+    private var pendingObfuscations: [String: PendingObfuscation] = [:]
+    private let pendingObfuscationsQueue = DispatchQueue(label: "com.bugfender.capacitor.obfuscation")
 
     @objc func `init`(_ call: CAPPluginCall) {
         // MARK: before init
@@ -39,6 +77,16 @@ public class BugfenderPlugin: CAPPlugin {
         let registerErrorHandler = call.getBool("registerErrorHandler", false)
         if registerErrorHandler {
             Bugfender.enableCrashReporting()
+        }
+
+        if call.getBool("networkLoggingEnabled", false) {
+            Bugfender.setNetworkLoggingEnabled(true)
+        }
+        if call.getBool("networkLoggingCaptureBodies", false) {
+            Bugfender.setNetworkLoggingCaptureBodies(true)
+        }
+        if call.getBool("networkLoggingCaptureErrorResponseBodies", false) {
+            Bugfender.setNetworkLoggingCaptureErrorResponseBodies(true)
         }
 
         call.resolve()
@@ -215,4 +263,229 @@ public class BugfenderPlugin: CAPPlugin {
         Bugfender.setForceEnabled(call.getBool("state")!)
         call.resolve()
     }
+
+    @objc func setNetworkLoggingEnabled(_ call: CAPPluginCall) {
+        Bugfender.setNetworkLoggingEnabled(call.getBool("enabled", false))
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingCaptureBodies(_ call: CAPPluginCall) {
+        Bugfender.setNetworkLoggingCaptureBodies(call.getBool("capture", false))
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingCaptureErrorResponseBodies(_ call: CAPPluginCall) {
+        Bugfender.setNetworkLoggingCaptureErrorResponseBodies(call.getBool("capture", false))
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingURLFilter(_ call: CAPPluginCall) {
+        let allowlist = call.getArray("allowlist", String.self)
+        let denylist = call.getArray("denylist", String.self)
+        Bugfender.setNetworkLoggingURLFilter(allowlist: allowlist, denylist: denylist)
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingMaxRequestsPerMinute(_ call: CAPPluginCall) {
+        if call.getValue("count") == nil || call.getValue("count") is NSNull {
+            Bugfender.setNetworkLoggingMaxRequestsPerMinute(nil)
+        } else if let count = call.getInt("count") {
+            Bugfender.setNetworkLoggingMaxRequestsPerMinute(count)
+        } else {
+            Bugfender.setNetworkLoggingMaxRequestsPerMinute(nil)
+        }
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingRequestObfuscationHandlerEnabled(_ call: CAPPluginCall) {
+        if call.getBool("enabled", false) {
+            installRequestObfuscationHandler()
+        } else {
+            Bugfender.setNetworkLoggingRequestObfuscationHandler(nil)
+        }
+        call.resolve()
+    }
+
+    @objc func setNetworkLoggingResponseObfuscationHandlerEnabled(_ call: CAPPluginCall) {
+        if call.getBool("enabled", false) {
+            installResponseObfuscationHandler()
+        } else {
+            Bugfender.setNetworkLoggingResponseObfuscationHandler(nil)
+        }
+        call.resolve()
+    }
+
+    @objc func completeNetworkObfuscation(_ call: CAPPluginCall) {
+        guard let requestId = call.getString("requestId"), !requestId.isEmpty else {
+            call.resolve()
+            return
+        }
+
+        var pending: PendingObfuscation?
+        pendingObfuscationsQueue.sync {
+            pending = pendingObfuscations[requestId]
+        }
+        if let pending = pending {
+            pending.response = call.getObject("result")
+            pending.semaphore.signal()
+        }
+        call.resolve()
+    }
+
+    /// Example / verification helper: URLSession request so traffic appears as `bf_network`.
+    @objc func sendInstrumentedNetworkRequest(_ call: CAPPluginCall) {
+        let urlString = call.getString("url") ?? "https://example.com/"
+        let httpMethod = (call.getString("method") ?? "GET").uppercased()
+        let body = call.getString("body")
+        let extraHeaders = call.getObject("headers") ?? [:]
+
+        guard let url = URL(string: urlString) else {
+            call.reject("Invalid URL")
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = httpMethod
+        request.timeoutInterval = 15.0
+
+        var hasAuthorization = false
+        for (key, value) in extraHeaders {
+            if let stringValue = value as? String {
+                request.setValue(stringValue, forHTTPHeaderField: key)
+                if key.compare("Authorization", options: .caseInsensitive) == .orderedSame {
+                    hasAuthorization = true
+                }
+            }
+        }
+        if !hasAuthorization {
+            request.setValue("secret-token", forHTTPHeaderField: "Authorization")
+        }
+
+        if let body = body,
+           !body.isEmpty,
+           httpMethod == "POST" || httpMethod == "PUT" || httpMethod == "PATCH" {
+            request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+            request.httpBody = body.data(using: .utf8)
+        }
+
+        let task = URLSession.shared.dataTask(with: request) { _, response, error in
+            if let error = error {
+                call.reject(error.localizedDescription)
+                return
+            }
+            let status: Int
+            if let httpResponse = response as? HTTPURLResponse {
+                status = httpResponse.statusCode
+            } else {
+                status = 0
+            }
+            DispatchQueue.main.async {
+                Bugfender.forceSendOnce()
+                call.resolve([
+                    "status": status,
+                    "shouldCapture": true,
+                    "requestId": NSNull()
+                ])
+            }
+        }
+        task.resume()
+    }
+
+    private func installRequestObfuscationHandler() {
+        Bugfender.setNetworkLoggingRequestObfuscationHandler { [weak self] url, headers, body in
+            guard let self = self else {
+                return (url: url, headers: headers, body: body)
+            }
+
+            let response = self.invokeJSObfuscation(
+                eventName: "BugfenderObfuscateNetworkRequest",
+                data: [
+                    "url": url,
+                    "headers": headers,
+                    "body": body as Any
+                ]
+            )
+            guard let response = response else {
+                return (url: url, headers: headers, body: body)
+            }
+
+            let obfuscatedUrl = response["url"] as? String ?? url
+            let obfuscatedHeaders = self.stringMap(from: response["headers"])
+            let obfuscatedBody = response["body"] as? String
+            return (url: obfuscatedUrl, headers: obfuscatedHeaders, body: obfuscatedBody)
+        }
+    }
+
+    private func installResponseObfuscationHandler() {
+        Bugfender.setNetworkLoggingResponseObfuscationHandler { [weak self] headers, body in
+            guard let self = self else {
+                return (headers: headers, body: body)
+            }
+
+            let response = self.invokeJSObfuscation(
+                eventName: "BugfenderObfuscateNetworkResponse",
+                data: [
+                    "headers": headers,
+                    "body": body as Any
+                ]
+            )
+            guard let response = response else {
+                return (headers: headers, body: body)
+            }
+
+            let obfuscatedHeaders = self.stringMap(from: response["headers"])
+            let obfuscatedBody = response["body"] as? String
+            return (headers: obfuscatedHeaders, body: obfuscatedBody)
+        }
+    }
+
+    private func invokeJSObfuscation(eventName: String, data: [String: Any]) -> [String: Any]? {
+        // Avoid deadlocking the platform/UI thread while waiting for JS.
+        if Thread.isMainThread {
+            return nil
+        }
+
+        let requestId = UUID().uuidString
+        let pending = PendingObfuscation()
+        pendingObfuscationsQueue.sync {
+            pendingObfuscations[requestId] = pending
+        }
+
+        var payload = data
+        payload["requestId"] = requestId
+
+        DispatchQueue.main.async { [weak self] in
+            self?.notifyListeners(eventName, data: payload)
+        }
+
+        let waitResult = pending.semaphore.wait(timeout: .now() + 3.0)
+        pendingObfuscationsQueue.sync {
+            pendingObfuscations.removeValue(forKey: requestId)
+        }
+
+        if waitResult == .timedOut {
+            return nil
+        }
+        return pending.response
+    }
+
+    private func stringMap(from value: Any?) -> [String: String] {
+        guard let raw = value as? [AnyHashable: Any] else {
+            return [:]
+        }
+        var mapped: [String: String] = [:]
+        for (key, entry) in raw {
+            if entry is NSNull {
+                mapped[String(describing: key)] = ""
+            } else {
+                mapped[String(describing: key)] = String(describing: entry)
+            }
+        }
+        return mapped
+    }
+}
+
+private final class PendingObfuscation {
+    let semaphore = DispatchSemaphore(value: 0)
+    var response: [String: Any]?
 }

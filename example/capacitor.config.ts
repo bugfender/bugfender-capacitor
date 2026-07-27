@@ -7,6 +7,9 @@ const config: CapacitorConfig = {
   webDir: "www",
   plugins: {
     Bugfender: {},
+    CapacitorHttp: {
+      enabled: true,
+    },
     SplashScreen: {
       launchShowDuration: 0,
     },
