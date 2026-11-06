@@ -46,8 +46,15 @@ public class BugfenderPlugin: CAPPlugin, CAPBridgedPlugin {
 
     private var pendingObfuscations: [String: PendingObfuscation] = [:]
     private let pendingObfuscationsQueue = DispatchQueue(label: "com.bugfender.capacitor.obfuscation")
+    private static var isInitialized = false
 
     @objc func `init`(_ call: CAPPluginCall) {
+
+        if Self.isInitialized {
+          call.resolve()
+          return
+        }
+      
         // MARK: before init
         if let deviceName = call.getString("deviceName") {
             Bugfender.overrideDeviceName(deviceName)
@@ -63,6 +70,8 @@ public class BugfenderPlugin: CAPPlugin, CAPBridgedPlugin {
 
         // MARK: init
         Bugfender.activateLogger(call.getString("appKey")!)
+
+        Self.isInitialized = true
 
         // MARK: after init
         if let maximumLocalStorageSize = call.getInt("maximumLocalStorageSize") {
